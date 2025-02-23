@@ -1,9 +1,9 @@
 {
-  "name": "farmlyfinal",
+  "name": "farmly",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -31,6 +31,6 @@
     "@eslint/eslintrc": "^3",
     "daisyui": "^4.12.23",
     "eslint": "^9",
-    "eslint-config-next": "15.1.2",
+    "eslint-config-next": "15.1.2"
   }
 }
