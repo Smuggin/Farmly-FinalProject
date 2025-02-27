@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${interFont.variable} antialiased mx-auto max-w-7xl`}>
+      <body className={`${interFont.variable} antialiased`}>
         {children}
       </body>
     </html>

@@ -1,4 +1,4 @@
-import Image from "next/image";
+
 import BannerSection from "@/components/bannerSection"
 import Navbar from "@/components/nav";
 import { MiniNav } from "@/components/miniNav";
@@ -7,7 +7,7 @@ import ProductSection from "@/components/productSection";
 
 export default function Home() {
   return (
-    <>
+    <div className="mx-auto max-w-7xl">
       <Navbar/>
       <MiniNav />
       <BannerSection/>
@@ -17,6 +17,6 @@ export default function Home() {
         </div>
         <ProductSection />
       </div>
-    </>
+    </div>
   );
 }
