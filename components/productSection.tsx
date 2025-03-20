@@ -32,12 +32,17 @@ export default function ProductSection(){
         },
     ]
     return (
-        <div className="grid grid-cols-4 mx-auto gap-9 mt-4">    
+        <>
+        <div className="grid grid-cols-4 mx-auto gap-6 mt-4">   
+            <div className="col-span-4">
+            สินค้าทั้งหมด     
+            </div> 
             {
                 products.map((src: any, index: number) => (
                     <ProductCard key={index} product={src} />
                 ))
             }
         </div>
+        </>
     )
 }
