@@ -12,22 +12,52 @@ export default function Signup() {
   });
 
   const [passwordError, setPasswordError] = useState("");
+  const [apiResponse, setApiResponse] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("รหัสผ่านไม่ตรงกัน กรุณาลองใหม่");
       return;
     }
 
     setPasswordError("");
-    console.log("Signup Data:", formData);
-    alert("สมัครบัญชีสำเร็จ!");
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setApiResponse(data.message);
+      } else {
+        setApiResponse("สมัครสมาชิกสำเร็จ!");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          password: "",
+          confirmPassword: "",
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setApiResponse("เกิดข้อผิดพลาดในการสมัครสมาชิก");
+    }
   };
 
   return (
@@ -98,13 +128,7 @@ export default function Signup() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className={`w-full p-3 border ${
-                  passwordError ? "border-red-500" : "border-gray-300"
-                } rounded-lg focus:outline-none ${
-                  passwordError
-                    ? "focus:ring-2 focus:ring-red-500"
-                    : "focus:ring-2 focus:ring-green-500"
-                }`}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
               />
               {passwordError && (
@@ -118,14 +142,11 @@ export default function Signup() {
             >
               สมัครสมาชิก
             </button>
-          </form>
 
-          <p className="text-center text-gray-600 mt-4">
-            มีบัญชีอยู่แล้ว?{" "}
-            <a href="/login" className="text-green-500 hover:underline">
-              เข้าสู่ระบบ
-            </a>
-          </p>
+            {apiResponse && (
+              <p className="text-center text-red-500 mt-4">{apiResponse}</p>
+            )}
+          </form>
         </div>
       </div>
     </div>
