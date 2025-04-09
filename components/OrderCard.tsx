@@ -12,9 +12,9 @@ interface OrderProps {
 }
 
 const statusColors: Record<string, string> = {
-  "สำเร็จ": "text-green-500",
-  "ที่ต้องได้รับ": "text-yellow-500",
-  "ที่ต้องจัดส่ง": "text-black",
+  สำเร็จ: "text-green-500",
+  ที่ต้องได้รับ: "text-yellow-500",
+  ที่ต้องจัดส่ง: "text-black",
   "ยกเลิก/ขอคืนเงิน": "text-red-500",
 };
 
@@ -31,7 +31,11 @@ const OrderCard: React.FC<OrderProps> = ({
   return (
     <div className="bg-white p-4 rounded-lg shadow-md flex gap-4">
       {/* รูปสินค้า */}
-      <img src={shopImage} alt={shopName} className="w-20 h-20 rounded-lg object-cover" />
+      <img
+        src={shopImage}
+        alt={shopName}
+        className="w-20 h-20 rounded-lg object-cover"
+      />
 
       {/* รายละเอียดออเดอร์ */}
       <div className="flex flex-col flex-grow">
@@ -44,7 +48,9 @@ const OrderCard: React.FC<OrderProps> = ({
 
       {/* ราคา & สถานะ */}
       <div className="text-right">
-        <div className={`text-xl font-bold ${statusColors[status]}`}>฿ {totalPrice.toLocaleString()}</div>
+        <div className={`text-xl font-bold ${statusColors[status]}`}>
+          ฿ {totalPrice.toLocaleString()}
+        </div>
         <div className={`text-sm ${statusColors[status]}`}>{status}</div>
       </div>
     </div>

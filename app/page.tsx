@@ -1,21 +1,48 @@
 
-import BannerSection from "@/components/bannerSection"
+import BannerSection from "@/components/bannerSection";
 import Navbar from "@/components/nav";
 import { MiniNav } from "@/components/miniNav";
-import { MiniMenus } from "@/components/miniMenu";
+import MiniMenus from "@/components/miniMenu";
 import ProductSection from "@/components/productSection";
+import { PrismaClient } from "@prisma/client";
 
-export default function Home() {
+
+const prisma = new PrismaClient();
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { category?: string };
+}) {
+  const categories = await prisma.category.findMany();
+
+  const products = await prisma.product.findMany({
+    where: searchParams.category
+      ? { category: { name: searchParams.category } }
+      : undefined,
+    include: {
+      category: true,
+      store: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
   return (
     <div className="mx-auto max-w-7xl">
-      <Navbar/>
+      <Navbar />
       <MiniNav />
-      <BannerSection/>
+      <BannerSection />
       <div className="grid grid-cols-[.10fr_1fr]">
         <div className="w-full px-4">
-          <MiniMenus />
+          <MiniMenus categories={categories} />
         </div>
-        <ProductSection />
+        <ProductSection products={products} />
       </div>
     </div>
   );

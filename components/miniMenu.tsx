@@ -1,85 +1,40 @@
-"use client";
-import * as React from "react";
 import Link from "next/link";
-
-import { cn } from "@/lib/utils";
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-export function MiniMenus() {
+interface MiniMenusProps {
+  categories: { id: number; name: string }[];
+}
+
+export default function MiniMenus({ categories }: MiniMenusProps) {
   return (
     <NavigationMenu className="flex flex-col w-48 mt-4 ml-3 rounded-xl border py-2">
-      <NavigationMenuList
-        data-orientation="vertical"
-        className="flex flex-col text-left items-start justify-start gap-2"
-      >
+      <NavigationMenuList className="flex flex-col text-left items-start justify-start gap-2">
         <NavigationMenuItem className="w-full text-left text-md">
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={`navigationMenuTriggerStyle() px-12`}
-            >
-              ผลไม้สด
-            </NavigationMenuLink>
-          </Link>
+          <NavigationMenuLink asChild>
+            <Link href="/">ทั้งหมด</Link>
+          </NavigationMenuLink>
         </NavigationMenuItem>
-        <Separator className="px-0"/>
-        <NavigationMenuItem className="w-full text-left text-md">
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={`navigationMenuTriggerStyle() px-12`}
-            >
-              ผลไม้แปรรูป
+        <Separator />
+
+        {categories.map((category) => (
+          <NavigationMenuItem
+            key={category.id}
+            className="w-full text-left text-md"
+          >
+            <NavigationMenuLink asChild>
+              <Link href={`/?category=${encodeURIComponent(category.name)}`}>
+                {category.name}
+              </Link>
             </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <Separator className="px-0"/>
-        <NavigationMenuItem className="w-full text-left text-md">
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={`navigationMenuTriggerStyle() px-12`}
-            >
-              ผักสด
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <Separator className="px-0"/>
-        <NavigationMenuItem className="w-full text-left text-md">
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={`navigationMenuTriggerStyle() px-12`}
-            >
-              สมุนไพร
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <Separator className="px-0"/>
-        <NavigationMenuItem className="w-full text-left text-md">
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={`navigationMenuTriggerStyle() px-12`}
-            >
-              สมุนไพร
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <Separator className="px-0"/>
-        <NavigationMenuItem className="w-full text-left text-md">
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={`navigationMenuTriggerStyle() px-12`}
-            >
-              สมุนไพร
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
+            <Separator />
+          </NavigationMenuItem>
+        ))}
       </NavigationMenuList>
     </NavigationMenu>
   );

@@ -3,7 +3,7 @@ import { Minus, Plus, Heart, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import ProductDetails from "@/components/ProductDetails"; // ✅ Import component
-
+import Image from "next/image";
 async function getProduct(id: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`
@@ -21,9 +21,11 @@ export default async function ProductDetail({ id }: { id: string }) {
       <div className="grid grid-cols-[1.5fr_2fr]">
         <div className="w-[500px] rounded-md pl-7">
           <AspectRatio ratio={1 / 1}>
-            <img
-              
-              
+            <Image
+              src={product.image || "/placeholder.jpg"}
+              alt={product.name}
+              width={500}
+              height={500}
               className="w-full h-full object-cover rounded-md"
             />
           </AspectRatio>
@@ -74,7 +76,6 @@ export default async function ProductDetail({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* ✅ ส่ง description และ store ไปที่ ProductDetails */}
       <ProductDetails
         description={product.description}
         store={{
@@ -83,6 +84,7 @@ export default async function ProductDetail({ id }: { id: string }) {
             ? `${product.store.address.street}, ${product.store.address.city}, ${product.store.address.state}, ${product.store.address.postalCode}, ${product.store.address.country}`
             : "ไม่มีที่อยู่ร้านค้า",
         }}
+        productId={product.id}
       />
     </>
   );

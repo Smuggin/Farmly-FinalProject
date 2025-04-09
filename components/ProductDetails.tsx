@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 
+import ReviewList from "@/components/ReviewList";
+
 export default function ProductDetails({
   description,
   store,
+  productId,
 }: {
   description: string;
   store: { name: string; address?: string };
+  productId: number;
 }) {
   const [activeTab, setActiveTab] = useState<
     "description" | "reviews" | "farmer"
@@ -15,7 +19,7 @@ export default function ProductDetails({
 
   return (
     <div className="w-full mt-8 pl-8">
-      {/* แถบเมนู */}
+      
       <div className="flex space-x-6 border-b pb-2">
         <div
           className={`cursor-pointer ${
@@ -49,13 +53,15 @@ export default function ProductDetails({
         </div>
       </div>
 
-      {/* แสดงเนื้อหาตามแท็บที่เลือก */}
+      
       <div className="mt-4">
         {activeTab === "description" && (
           <p className="text-lg">{description || "ไม่มีรายละเอียดสินค้า"}</p>
         )}
         {activeTab === "reviews" && (
-          <p className="text-lg text-gray-500">ยังไม่มีรีวิวสินค้า</p>
+          <div>
+            <ReviewList productId={productId} />
+          </div>
         )}
         {activeTab === "farmer" && (
           <div className="grid grid-cols-[0.6fr_1.5fr] mt-4 gap-12">
