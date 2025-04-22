@@ -4,6 +4,7 @@ import Navbar from "@/components/nav";
 import { MiniNav } from "@/components/miniNav";
 import MiniMenus from "@/components/miniMenu";
 import ProductSection from "@/components/productSection";
+import BenefitsSection from "@/components/sections/benefitsSection";
 import { PrismaClient } from "@prisma/client";
 
 
@@ -43,6 +44,7 @@ export default async function Home({
           <MiniMenus categories={categories} />
         </div>
         <ProductSection products={products} />
+        <BenefitsSection />
       </div>
     </div>
   );
