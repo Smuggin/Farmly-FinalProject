@@ -1,9 +1,11 @@
+
 import { notFound } from "next/navigation";
 import { Minus, Plus, Heart, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import ProductDetails from "@/components/ProductDetails"; // ✅ Import component
 import Image from "next/image";
+
 async function getProduct(id: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/product/${id}`

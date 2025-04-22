@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET(req: Request) {
   const { pathname } = new URL(req.url);
-  const id = pathname.split("/").pop(); // ดึง id จาก URL
+  const id = pathname.split("/").pop(); 
 
   if (!id) {
     return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     include: {
       category: true,
       store: {
-        include: { address: true }, // ✅ ดึงที่อยู่ร้านมาด้วย
+        include: { address: true }, 
       },
     },
   });

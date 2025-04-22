@@ -1,4 +1,13 @@
+// components/OrderCard.tsx
 import React from "react";
+
+interface OrderItem {
+  product: {
+    name: string;
+  };
+  quantity: number;
+  price: number;
+}
 
 interface OrderProps {
   id: number;
@@ -8,13 +17,13 @@ interface OrderProps {
   recipientName: string;
   status: string;
   totalPrice: number;
-  items: string[];
+  items: OrderItem[];
 }
 
 const statusColors: Record<string, string> = {
   สำเร็จ: "text-green-500",
-  ที่ต้องได้รับ: "text-yellow-500",
-  ที่ต้องจัดส่ง: "text-black",
+  "ที่ต้องได้รับ": "text-yellow-500",
+  "ที่ต้องจัดส่ง": "text-black",
   "ยกเลิก/ขอคืนเงิน": "text-red-500",
 };
 
@@ -30,27 +39,20 @@ const OrderCard: React.FC<OrderProps> = ({
 }) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-md flex gap-4">
-      {/* รูปสินค้า */}
-      <img
-        src={shopImage}
-        alt={shopName}
-        className="w-20 h-20 rounded-lg object-cover"
-      />
+      <img src={shopImage} alt={shopName} className="w-20 h-20 rounded-lg object-cover" />
 
-      {/* รายละเอียดออเดอร์ */}
       <div className="flex flex-col flex-grow">
         <div className="text-lg font-semibold">{`ออเดอร์ #${id}`}</div>
         <div className="text-sm text-gray-500">{shopName}</div>
         <div className="text-sm text-gray-500">📍 {shippingAddress}</div>
         <div className="text-sm text-gray-500">👤 {recipientName}</div>
-        <div className="text-sm text-gray-500">🛒 {items.join(", ")} ...</div>
+        <div className="text-sm text-gray-500">
+          🛒 {items.map((item) => item.product.name).join(", ")} ...
+        </div>
       </div>
 
-      {/* ราคา & สถานะ */}
       <div className="text-right">
-        <div className={`text-xl font-bold ${statusColors[status]}`}>
-          ฿ {totalPrice.toLocaleString()}
-        </div>
+        <div className={`text-xl font-bold ${statusColors[status]}`}>฿ {totalPrice.toLocaleString()}</div>
         <div className={`text-sm ${statusColors[status]}`}>{status}</div>
       </div>
     </div>
