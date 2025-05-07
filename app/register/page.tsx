@@ -21,6 +21,7 @@ export default function Signup() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       setPasswordError("รหัสผ่านไม่ตรงกัน กรุณาลองใหม่");
       return;
@@ -43,7 +44,7 @@ export default function Signup() {
       const data = await res.json();
 
       if (!res.ok) {
-        setApiResponse(data.message);
+        setApiResponse(data.message || "เกิดข้อผิดพลาดในการสมัครสมาชิก");
       } else {
         setApiResponse("สมัครสมาชิกสำเร็จ!");
         setFormData({
@@ -144,7 +145,9 @@ export default function Signup() {
             </button>
 
             {apiResponse && (
-              <p className="text-center text-red-500 mt-4">{apiResponse}</p>
+              <p className={`text-center mt-4 ${apiResponse.includes("สำเร็จ") ? 'text-green-500' : 'text-red-500'}`}>
+                {apiResponse}
+              </p>
             )}
           </form>
         </div>

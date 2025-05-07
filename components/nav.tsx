@@ -17,20 +17,21 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Logo from "@/app/dist/FarmlyNeighbor_logo_prototype_2.png";
+import { signIn, signOut, useSession } from "next-auth/react";
 
-// Type for the classNames function
-function classNames(...classes: string[]): string {
+function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-// Type for the Navbar component
 const Navbar: React.FC = () => {
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
+
   return (
     <Disclosure as="nav" className="bg-white dark:bg-gray-800">
       {({ open }) => (
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8 py-2">
           <div className="relative flex h-16 items-center justify-between">
-            {/* Mobile Menu Button */}
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
               <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:ring-2 focus:ring-white focus:outline-none focus:ring-inset">
                 <Bars3Icon
@@ -44,11 +45,9 @@ const Navbar: React.FC = () => {
               </DisclosureButton>
             </div>
 
-            {/* Logo & Search */}
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex shrink-0 items-center">
-                {/* This should be link after */}
-                <a href="/"> 
+                <a href="/">
                   <Image
                     alt="Farmly Neighbor"
                     src={Logo}
@@ -59,11 +58,7 @@ const Navbar: React.FC = () => {
                 </a>
               </div>
               <div className="hidden sm:block leading-none max-w-md ml-4 font-bold text-xl">
-                <a href="/">
-                  Farmly
-                  <br />
-                  Neighbor
-                </a>
+                <a href="/">Farmly<br />Neighbor</a>
               </div>
               <div className="hidden sm:block sm:ml-6 max-w-md w-full">
                 <input
@@ -82,7 +77,7 @@ const Navbar: React.FC = () => {
               </div>
             </div>
 
-            {/* Profile & Cart */}
+            {/* Right Side: Cart + Profile/Login */}
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
               <button
                 type="button"
@@ -91,54 +86,53 @@ const Navbar: React.FC = () => {
                 <ShoppingCartIcon aria-hidden="true" className="size-6" />
               </button>
 
-              {/* Profile dropdown */}
-              <Menu as="div" className="relative ml-3">
-                <MenuButton className="relative flex rounded-full text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none">
-                  <img
-                    alt=""
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    className="size-8 rounded-full"
-                  />
-                </MenuButton>
-                <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 focus:outline-none">
-                  <MenuItem>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={`block px-4 py-2 text-sm text-gray-700 ${
-                          active ? "bg-gray-100" : ""
-                        }`}
-                      >
-                        Your Profile
-                      </a>
-                    )}
-                  </MenuItem>
-                  <MenuItem>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={`block px-4 py-2 text-sm text-gray-700 ${
-                          active ? "bg-gray-100" : ""
-                        }`}
-                      >
-                        Settings
-                      </a>
-                    )}
-                  </MenuItem>
-                  <MenuItem>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={`block px-4 py-2 text-sm text-gray-700 ${
-                          active ? "bg-gray-100" : ""
-                        }`}
-                      >
-                        Sign out
-                      </a>
-                    )}
-                  </MenuItem>
-                </MenuItems>
-              </Menu>
+              {/* Auth */}
+              {isAuthenticated ? (
+                <Menu as="div" className="relative ml-3">
+                  <MenuButton className="relative flex rounded-full text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-none">
+                    <img
+                      alt={session.user?.name || "User"}
+                      src={session.user?.image || "/default-avatar.png"}
+                      className="size-8 rounded-full"
+                    />
+                  </MenuButton>
+                  <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 focus:outline-none">
+                    <MenuItem>
+                      {({ active }) => (
+                        <a
+                          href="/profile"
+                          className={classNames(
+                            active ? "bg-gray-100" : "",
+                            "block px-4 py-2 text-sm text-gray-700"
+                          )}
+                        >
+                          โปรไฟล์ของคุณ
+                        </a>
+                      )}
+                    </MenuItem>
+                    <MenuItem>
+                      {({ active }) => (
+                        <button
+                          onClick={() => signOut()}
+                          className={classNames(
+                            active ? "bg-gray-100" : "",
+                            "w-full text-left px-4 py-2 text-sm text-gray-700"
+                          )}
+                        >
+                          ออกจากระบบ
+                        </button>
+                      )}
+                    </MenuItem>
+                  </MenuItems>
+                </Menu>
+              ) : (
+                <button
+                  onClick={() => signIn()}
+                  className="ml-4 text-sm py-3 text-white bg-green-500 hover:bg-green-600 px-4 rounded-md"
+                >
+                  เข้าสู่ระบบ
+                </button>
+              )}
             </div>
           </div>
 

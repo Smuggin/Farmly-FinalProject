@@ -1,6 +1,7 @@
 // app/api/login/route.ts
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,9 @@ export async function POST(request: NextRequest) {
       where: { email },
     });
 
-    if (!user || user.password !== password) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+  
+    if (!user || !isPasswordValid) {
       return NextResponse.json(
         { message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" },
         { status: 401 }

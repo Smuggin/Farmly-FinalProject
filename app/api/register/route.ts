@@ -1,6 +1,7 @@
 // app/api/register/route.ts
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -12,13 +13,15 @@ export async function POST(request: NextRequest) {
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
-
+    
     if (existingUser) {
       return NextResponse.json(
         { message: "อีเมลนี้ถูกใช้งานแล้ว" },
         { status: 400 }
       );
     }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
 
     // บันทึกข้อมูลผู้ใช้ลง Database
     const newUser = await prisma.user.create({
@@ -26,7 +29,7 @@ export async function POST(request: NextRequest) {
         name,
         email,
         phone,
-        password,
+        password: hashedPassword,
       },
     });
 

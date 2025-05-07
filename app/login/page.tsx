@@ -1,43 +1,49 @@
 "use client";
 
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSquareXTwitter } from "@fortawesome/free-brands-svg-icons";
+import { faGoogle, faSquareXTwitter } from "@fortawesome/free-brands-svg-icons";
 import { faInstagram } from "@fortawesome/free-brands-svg-icons";
 import { faFacebook } from "@fortawesome/free-brands-svg-icons";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
+  const { data: session, status } = useSession(); 
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/"); // Redirect if already logged in
+    }
+  }, [status, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => { 
     e.preventDefault();
 
-    try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    // Perform the signIn call with credentials
+    const result = await signIn("credentials", {
+      redirect: false, // Prevent automatic redirection
+      email: formData.email,
+      password: formData.password,
+    });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setErrorMessage(data.message);
-      } else {
-        router.push("/"); // เปลี่ยนไปยังหน้า Page หลักหลังจาก Login สำเร็จ
-      }
-    } catch (error) {
-      console.error("Login Error:", error);
-      setErrorMessage("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
+    if (result?.error) {
+      setErrorMessage("Invalid email or password"); // Error message on failed login
+    } else {
+      setErrorMessage(""); // Clear any previous errors
+      // You can redirect to the homepage or another page after successful login
+      window.location.href = "/"; // or use `useRouter().push("/")`
     }
   };
 
@@ -121,7 +127,19 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-3">
-            <button className="w-full flex items-center py-2 px-4 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50">
+            <button className="w-full flex items-center py-2 px-4 border border-red-600 text-red-600 rounded-lg hover:bg-blue-50" onClick={() => signIn("google")}  >
+              <FontAwesomeIcon
+                icon={faGoogle}
+                width={40}
+                height={40}
+                className=" text-red-600"
+              />
+              <span className="ml-4 flex-grow text-center">
+                เข้าสู่ระบบด้วย Google  
+              </span>
+            </button>
+
+            <button className="w-full flex items-center py-2 px-4 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50" onClick={() => signIn("facebook")}>
               <FontAwesomeIcon
                 icon={faFacebook}
                 width={40}
@@ -129,7 +147,7 @@ export default function LoginPage() {
                 className=" text-blue-600"
               />
               <span className="ml-4 flex-grow text-center">
-                เข้าสู่ระบบด้วย Facebook
+                เข้าสู่ระบบด้วย Facebook  
               </span>
             </button>
 
@@ -145,7 +163,7 @@ export default function LoginPage() {
               </span>
             </button>
 
-            <button className="w-full flex items-center py-2 px-4 border border-black text-black rounded-lg hover:bg-gray-100">
+            <button className="w-full flex items-center py-2 px-4 border border-black text-black rounded-lg hover:bg-gray-100" onClick={() => signIn("twitter")}>
               <FontAwesomeIcon
                 icon={faSquareXTwitter}
                 width={40}

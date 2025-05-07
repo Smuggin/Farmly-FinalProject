@@ -1,0 +1,161 @@
+"use client";
+
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+
+export default function AddProduct() {
+    const [formData, setFormData] = useState({
+      productName: "",
+      price: 0,
+      unit: "",
+      type: "",
+      stock: 0,
+      description: "",
+    });
+    
+    const [image, setImage] = useState<File | null>(null)
+    const [apiResponse, setApiResponse] = useState("")
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+      console.log(formData);
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+        // Handle form submission logic here
+      console.log("Form submitted");
+      console.log(formData);
+      
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productName: formData.productName,
+          price: formData.price,
+          unit: formData.unit,
+          type: formData.type,
+          stock: formData.stock,
+          description: formData.description
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setApiResponse(data.message);
+      } else {
+        setApiResponse("เพิ่มสินค้าสำเร็จ!");
+        setFormData({
+          productName: "",
+          price: 0,
+          unit: "",
+          type: "",
+          stock: 0,
+          description: ""
+        });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setApiResponse("เพิ่มสินค้าไม่สำเร็จ!");
+    }
+    }
+
+    return ( 
+    <div className="grid grid-cols-[1.5fr_2fr]">
+        <div className="w-[500px] rounded-md pl-7">
+            <AspectRatio ratio={1 / 1} className="rounded-md bg-gray-300">
+            </AspectRatio>  
+        </div>
+        <div className="w-full">
+          <form onSubmit={handleSubmit}>
+          <div className="flex justify-between items-center">
+            <label className="text-2xl font-bold w-full">ชื่อสินค้า</label>
+          </div>
+          <input type="text" onChange={handleChange} name="productName" className="font-bold text-4xl border border-t border-gray-400 rounded-lg mt-2"/>
+          <div className="mt-2 align-middle my-auto">
+            <div className="flex justify-between items-center mt-2">
+              <label className="text-2xl font-bold w-full">ราคาต่อหน่วย</label>
+            </div>
+            <div className="flex items-center space-x-2 mt-2">
+              <Input type="number" onChange={handleChange} name="price" className="text-lg border border-gray-400 rounded-lg w-1/6 px-2 mr-2" placeholder="ราคา"/> 
+              {/* <p className="text-xl font-extralight">ต่อ</p> */}
+              {/* <Input type="number" min="1" name="number" className="text-lg border border-gray-400 rounded-lg px-2 w-1/8 mr-2" placeholder="จำนวน"/> */}
+              <Select 
+                value={formData.unit}
+                onValueChange={(value) => setFormData({ ...formData, unit: value })}
+              >
+                <SelectTrigger className="border-gray-400 w-1/6">
+                  <SelectValue placeholder="หน่วยนับ"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="kg">กิโลกรัม</SelectItem>
+                    <SelectItem value="liter">ลิตร</SelectItem>
+                    <SelectItem value="piece">ชิ้น</SelectItem>
+                    <SelectItem value="box">กล่อง</SelectItem>
+                    <SelectItem value="bottle">ขวด</SelectItem>
+                    <SelectItem value="pack">แพ็ค</SelectItem>
+                    <SelectItem value="bag">ถุง</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Button className="bg-green-500 text-white rounded-lg px-4 py-2"><Plus></Plus>เพิ่มราคา</Button>
+            </div>
+          </div>
+          <div className="flex items-center mt-2 space-x-2">
+            <div className="w-1/6">
+              <div className="flex justify-between items-center mt-2">
+                <label className="text-2xl font-bold w-full">ชนิดสินค้า</label>
+              </div>
+              <Select
+                value={formData.type}
+                onValueChange={(value) => setFormData({ ...formData, type: value })}
+              >
+                <SelectTrigger className="w-full border-gray-400 mt-2">
+                  <SelectValue placeholder="ชนิดสินค้า"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-1/5">
+              <div className="flex justify-between items-center mt-2">
+                <label className="text-2xl font-bold w-full">จำนวนสินค้า</label>
+              </div>
+              <Input type="number" min="1" name="stock" onChange={handleChange} className="text-lg border border-gray-400 rounded-lg mt-2 w-36" placeholder="จำนวนสินค้า"/>
+            </div>
+          </div>
+          <hr className="mt-6 items-center"/>
+          <div className="flex justify-between items-center mt-3">
+            <label className="text-2xl font-bold w-full">รายละเอียดสินค้า</label>
+          </div>
+          <Textarea   
+          className="max-h-full mt-2" 
+          name="description" 
+          onChange={handleChange} 
+          placeholder="เพิ่มรายละเอียดสินค้า"
+          />
+      <div className="flex justify-end mt-4 w-full">
+        <Button type="submit" className="bg-green-500 text-white rounded-lg px-4 py-2">บันทึก</Button>
+      </div>
+      </form>
+    </div>
+  </div> )
+}

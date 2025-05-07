@@ -7,7 +7,6 @@ import ProductSection from "@/components/productSection";
 import BenefitsSection from "@/components/sections/benefitsSection";
 import { PrismaClient } from "@prisma/client";
 
-
 const prisma = new PrismaClient();
 
 export default async function Home({
