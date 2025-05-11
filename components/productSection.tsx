@@ -26,7 +26,7 @@ export default function ProductSection({ products }: ProductSectionProps) {
       {products.map((product) => (
         <ProductCard
           key={product.id}
-          product={{ ...product, href: `/products/${product.id}` }}
+          product={{ ...product, href: `/product/${product.id}` }}
         />
       ))}
     </div>

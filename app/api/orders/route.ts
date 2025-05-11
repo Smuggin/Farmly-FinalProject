@@ -11,11 +11,14 @@ export async function GET() {
           address: true,
           user: true,
           orderItems: {
+
+            
             include: {
               product: {
                 select: {
                   name: true,
                   image: true,
+                  price: true,
                   store: {
                     select: {
                       name: true,
@@ -40,7 +43,8 @@ export async function GET() {
       shippingAddress: `${order.address.city}, ${order.address.state}`,
       recipientName: order.user.name,
       status: convertStatus(order.status),
-      totalPrice: order.orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      totalPrice: order.orderItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+
       items: order.orderItems,
     }));
 
