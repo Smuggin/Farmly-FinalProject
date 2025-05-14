@@ -15,8 +15,12 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useParams } from 'next/navigation';
+
 
 export default function AddProduct() {
+    const params = useParams();
+    const storeId = params.id;
     const [formData, setFormData] = useState({
       productName: "",
       price: 0,
@@ -41,7 +45,7 @@ export default function AddProduct() {
       console.log(formData);
       
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/addproduct", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -50,7 +54,8 @@ export default function AddProduct() {
           unit: formData.unit,
           type: formData.type,
           stock: formData.stock,
-          description: formData.description
+          description: formData.description,
+          storeId: storeId,
         }),
       });
 

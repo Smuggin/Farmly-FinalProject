@@ -21,14 +21,13 @@ interface ProductSectionProps {
 
 export default function ProductSection({ products }: ProductSectionProps) {
   return (
-    <div className="grid grid-cols-4 mx-auto gap-6 mt-4">
-      <div className="col-span-4">สินค้าทั้งหมด</div>
-      {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={{ ...product, href: `/products/${product.id}` }}
-        />
-      ))}
-    </div>
+    <>
+    {products.map((product) => (
+      <ProductCard
+        key={product.id}
+        product={{ ...product, href: `/product/${product.id}` }}
+      />
+    ))}
+    </>
   );
 }

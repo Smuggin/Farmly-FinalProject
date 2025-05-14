@@ -5,8 +5,44 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Star } from 'lucide-react';
+import ProductSection from '@/components/productSection'; // adjust the path if needed
 
 export default function StorefrontPage() {
+  
+  type Product = {
+    id: number;
+    name: string;
+    image?: string | null;
+    price: number;
+    category: {
+      name: string;
+    };
+    store: {
+      name: string;
+    };
+    href?: string;
+  };
+
+  const mockedProducts: Product[] = [
+    {
+      id: 1,
+      name: 'มะม่วงน้ำดอกไม้',
+      image: '/products/mango.jpg',
+      price: 100,
+      category: { name: 'ผลไม้' },
+      store: { name: 'สวนลุงดำ' },
+    },
+    {
+      id: 2,
+      name: 'ทุเรียนหมอนทอง',
+      image: '/products/durian.jpg',
+      price: 400,
+      category: { name: 'ผลไม้' },
+      store: { name: 'สวนลุงดำ' },
+    },
+    // add more products as needed
+  ];
+
   return (
     <div className="flex w-full min-h-screen bg-white">
       {/* Sidebar */}
@@ -66,9 +102,11 @@ export default function StorefrontPage() {
           <h3 className="text-lg font-semibold">สินค้ายอดนิยม</h3>
           <Button variant="secondary">ดูเพิ่มเติม</Button>
         </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-          {/* {[...Array(8)].map((_, i) => (
+        <div className="grid grid-cols-4 mx-auto gap-6 mt-4">
+          <ProductSection products={mockedProducts} />
+        </div>
+        {/* <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {[...Array(8)].map((_, i) => (
             <Card key={i} className="p-2">
               <CardContent className="space-y-2">
                 <div className="w-full h-32 bg-gray-200 rounded" />
@@ -87,8 +125,8 @@ export default function StorefrontPage() {
                 </div>
               </CardContent>
             </Card>
-          ))} */}
-        </div>
+          ))}
+        </div> */}
       </main>
     </div>
   );
