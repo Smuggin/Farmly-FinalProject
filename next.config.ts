@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    domains: [
+        'ohtsnsoxzgjbgatxkknb.supabase.co'
+      ],
     remotePatterns: [
       {
         protocol: 'https',
@@ -11,6 +14,13 @@ const nextConfig: NextConfig = {
         pathname: '/products/**',
         search: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'bundui-images.netlify.app',
+        port: '',
+        pathname: '/products/**',
+        search: '',
+      }
     ],
   },
   

@@ -35,6 +35,7 @@ model Store {
   name      String
   owner     User      @relation(fields: [ownerId], references: [id])
   ownerId   Int       @unique  
+  image     String    
   products  Product[]
   address   Address?  @relation(fields: [addressId], references: [id])
   addressId Int?      @unique 
