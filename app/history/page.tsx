@@ -1,51 +1,44 @@
+// app/history/page.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import OrderCard from "@/components/OrderCard";
 
 const tabs = ["ทั้งหมด", "ที่ต้องจัดส่ง", "ที่ต้องได้รับ", "สำเร็จ", "ยกเลิก/ขอคืนเงิน"];
 
 const HistoryPage = () => {
+  const { data: session, status } = useSession();
   const [selectedTab, setSelectedTab] = useState("ทั้งหมด");
-  const [orders, setOrders] = useState<
-  {
-    id: number;
-    shopName: string;
-    shopImage: string;
-    shippingAddress: string;
-    recipientName: string;
-    status: string;
-    totalPrice: number;
-    items: {
-      product: {
-        name: string;
-        image?: string;
-        store?: {
-          name: string;
-        };
-      };
-      quantity: number;
-      price: number;
-    }[];
-  }[]
->([]);
+  const [orders, setOrders] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      const res = await fetch("/api/orders");
-      const data = await res.json();
-      console.log("📦 orders from API:", data);
-      setOrders(data);
-    };
+  if (status === "authenticated") {
+    fetch("/api/orders")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setOrders(data); // ✅ set เมื่อเป็น array เท่านั้น
+        } else {
+          console.error("Invalid response from /api/orders:", data);
+          setOrders([]); // ✅ fallback ป้องกัน crash
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading orders:", err);
+        setOrders([]); // ✅ fallback ป้องกัน crash
+      });
+  }
+}, [status]);
 
-    fetchOrders();
-  }, []);
+  if (status === "loading") return <p>กำลังโหลด...</p>;
+  if (status === "unauthenticated") return <p>กรุณาเข้าสู่ระบบก่อนดูประวัติคำสั่งซื้อ</p>;
 
   const filteredOrders =
     selectedTab === "ทั้งหมด" ? orders : orders.filter((order) => order.status === selectedTab);
 
   return (
-    <div className="p-4">
+    <div className="px-8">
       <h1 className="text-2xl font-bold mb-4">ประวัติการสั่งซื้อ</h1>
 
       <div className="flex gap-2 mb-4">

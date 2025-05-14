@@ -22,13 +22,16 @@ export async function GET(
     const store = await prisma.store.findUnique({
       where: { id: storeId },
       include: {
+        images: true,
         products: {
           include: {
             category: true,
+            images: true, // << Prisma จะรู้จักแล้ว ถ้าข้างบนถูกต้อง
           },
         },
       },
     });
+
 
     if (!store) {
       return NextResponse.json({ error: 'Store not found' }, { status: 404 });
@@ -38,14 +41,20 @@ export async function GET(
     const payload = {
       id: store.id,
       name: store.name,
-      image: store.image,
+      images: store.images.map((img) => ({
+        id: img.id,
+        url: img.url,
+      })),
       products: store.products.map((p) => ({
         id: p.id,
         name: p.name,
-        image: p.image,
+        images: p.images.map((img) => ({
+          id: img.id,
+          url: img.url,
+        })),
         price: p.price,
         category: { name: p.category.name },
-        store: { name: store.name },
+        store: { name: store.name }, // 👈 เพิ่ม store เข้าไปที่สินค้า
         href: `/store/${store.id}/product/${p.id}`,
       })),
     };

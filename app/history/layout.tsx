@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import NavBar from "@/components/nav";
 import { MiniNav } from "@/components/miniNav";
+import SessionWrapper from "../SessionWrapper";
 
 
 type LayoutProps = {
@@ -9,6 +10,7 @@ type LayoutProps = {
 
 export default function HistoryLayout({ children }: LayoutProps) {
   return (
+    <SessionWrapper>
     <div className="mx-auto max-w-7xl">
       {/* Navbar */}
       <NavBar />
@@ -16,7 +18,8 @@ export default function HistoryLayout({ children }: LayoutProps) {
       
 
       {/* Main Content */}
-      <main className="container mx-auto p-4">{children}</main>
+      <main className="container mx-auto">{children}</main>
     </div>
+    </SessionWrapper>
   );
 }

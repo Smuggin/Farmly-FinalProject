@@ -5,12 +5,19 @@ import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import ProductSection from '@/components/productSection';
+import Link from "next/link";
+
+type File = {
+  id: number;
+  url: string;
+  contentType: string;
+};
 
 type Product = {
   id: number;
   name: string;
-  image?: string | null;
   price: number;
+  images: File[];
   category: {
     name: string;
   };
@@ -20,7 +27,7 @@ type Store = {
   id: number;
   name: string;
   address?: string;
-  image: string;
+  images: File[];
   products: Product[];
 };
 
@@ -28,34 +35,36 @@ export default function StorefrontPage() {
   const { id } = useParams(); // grab store id from URL
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     if (!id) return;
     const fetchStore = async () => {
       try {
         const res = await fetch(`/api/store/${id}`);
         const data = await res.json();
+        console.log("data", data)
         setStore(data);
       } catch (err) {
         console.error('Failed to load store', err);
       } finally {
         setLoading(false);
       }
-    };
-
+    }; 
+    
     fetchStore();
   }, [id]);
 
+  const storeImage = store?.images?.[0]?.url || '/store-avatar.png';
+  console.log("StoreImage: ", storeImage)
   if (loading) return <div className="p-6">กำลังโหลดข้อมูลร้านค้า...</div>;
-  if (!store) return <div className="p-6 text-red-500">ไม่พบร้านค้า</div>;
-
+  if (!store) return <div className="p-6 text-red-500">ไม่พบร้านค้า</div>
   return (
     <div className="flex w-full min-h-screen bg-white">
       {/* Sidebar */}
       <aside className="w-64 border-r p-4">
         <div className="flex flex-col items-center text-center">
           <Image
-            src={store.image || "/store-avatar.png"}
+            src={storeImage}
             alt="Store Avatar"
             width={96}
             height={96}
@@ -90,9 +99,11 @@ export default function StorefrontPage() {
           <div className="z-10 relative">
             <h2 className="text-xl font-bold mb-1">เพิ่มสินค้าเข้า {store.name}!</h2>
             <p className="mb-4">เริ่มต้นการขายของคุณที่นี่</p>
-            <Button className="bg-white text-green-700 hover:bg-green-100">
-              + เพิ่มสินค้า
-            </Button>
+            <Link href={`/store/${store.id}/addproduct`}>
+              <Button className="bg-white text-green-700 hover:bg-green-100">
+                + เพิ่มสินค้า
+              </Button>
+            </Link>
           </div>
           <Image
             src="/produce-banner.jpg"

@@ -78,16 +78,14 @@ export default async function ProductDetail({ id }: { id: string }) {
         </div>
       </div>
 
-      <ProductDetails
-        description={product.description}
-        store={{
-          name: product.store?.name || "ไม่ระบุ",
-          address: product.store?.address
-            ? `${product.store.address.street}, ${product.store.address.city}, ${product.store.address.state}, ${product.store.address.postalCode}, ${product.store.address.country}`
-            : "ไม่มีที่อยู่ร้านค้า",
-        }}
-        productId={product.id}
-      />
+    <ProductDetails
+      description={product.description}
+      store={{
+        name: product.store?.name || "ไม่ระบุ",
+        description: product.store?.description  || "ไม่ระบุ"
+      }}
+      productId={product.id}
+    />
     </>
   );
 }

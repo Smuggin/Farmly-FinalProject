@@ -43,7 +43,7 @@ export default async function Home({
           <MiniMenus categories={categories} />
         </div>
         <div className="grid grid-cols-4 mx-auto gap-6 mt-4">
-          <div className="col-span-4">สินค้าทั้งหมด</div>
+          
           <ProductSection products={products} />
         </div>
         <BenefitsSection />

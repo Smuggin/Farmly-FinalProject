@@ -1,10 +1,13 @@
 import ProductCard from "@/components/products/productCard";
-import BenefitsSection from "./sections/benefitsSection";
+
 
 type Product = {
   id: number;
   name: string;
-  image?: string | null;
+  images: {
+    id: number;
+    url: string;
+  }[];
   price: number;
   category: {
     name: string;
@@ -22,12 +25,16 @@ interface ProductSectionProps {
 export default function ProductSection({ products }: ProductSectionProps) {
   return (
     <>
-    {products.map((product) => (
-      <ProductCard
-        key={product.id}
-        product={{ ...product, href: `/product/${product.id}` }}
-      />
-    ))}
+      {products.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={{
+            ...product,
+            image: product.images?.[0]?.url ?? null, // 👈 ใช้รูปแรกเป็นภาพหลัก
+            href: product.href ?? `/product/${product.id}`,
+          }}
+        />
+      ))}
     </>
   );
 }
