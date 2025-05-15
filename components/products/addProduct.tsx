@@ -17,10 +17,15 @@ import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+
+
+
 
 export default function AddProduct() {
   const params = useParams();
   const storeId = Array.isArray(params.id) ? params.id[0] : params.id;
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     productName: "",
@@ -89,7 +94,11 @@ export default function AddProduct() {
         stock: 0,
         description: "",
       });
-    }
+      setTimeout(() => {
+          router.push(`/store/${storeId}`);
+        }, 2000); // 2 วินาที
+      }
+    
   } catch (error) {
     console.error("Error:", error);
     setApiResponse("เพิ่มสินค้าไม่สำเร็จ!");
@@ -213,8 +222,18 @@ export default function AddProduct() {
             >
               บันทึก
             </Button>
+
           </div>
         </form>
+                    {apiResponse && (
+          <p
+            className={`mt-4 text-center ${
+              apiResponse.includes("สำเร็จ") ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {apiResponse}
+          </p>
+        )}
       </div>
     </div>
   );

@@ -5,6 +5,15 @@ import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import ProductDetails from "@/components/ProductDetails"; // ✅ Import component
 import Image from "next/image";
+const unitMap: Record<string, string> = {
+  kg: "กิโลกรัม",
+  liter: "ลิตร",
+  piece: "ชิ้น",
+  box: "กล่อง",
+  bottle: "ขวด",
+  pack: "แพ็ค",
+  bag: "ถุง",
+};
 
 async function getProduct(id: string) {
   const res = await fetch(
@@ -59,7 +68,9 @@ export default async function ProductDetail({ id }: { id: string }) {
                 <Plus />
               </Button>
             </div>
-            <p className="font-semibold text-green-500 ml-4">(ต่อ กิโลกรัม)</p>
+<p className="font-semibold text-green-500 ml-4">
+  (ต่อ {unitMap[product.unit] || "หน่วยไม่ระบุ"})
+</p>
           </div>
           <div className="w-full mt-4 space-x-2">
             <Button className="bg-green-500 font-light">
