@@ -20,7 +20,8 @@ import { useParams } from "next/navigation";
 
 export default function AddProduct() {
   const params = useParams();
-  const storeId = params.id;
+  const storeId = Array.isArray(params.id) ? params.id[0] : params.id;
+
   const [formData, setFormData] = useState({
     productName: "",
     price: 0,
@@ -57,46 +58,43 @@ export default function AddProduct() {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    console.log("Form submitted");
-    console.log(formData);
+  e.preventDefault();
 
-    try {
-      const res = await fetch("/api/addproduct", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          productName: formData.productName,
-          price: formData.price,
-          unit: formData.unit,
-          type: formData.type,
-          stock: formData.stock,
-          description: formData.description,
-          storeId: storeId,
-        }),
+  try {
+    const res = await fetch("/api/addproduct", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        productName: formData.productName,
+        price: Number(formData.price),
+        unit: formData.unit,
+        type: parseInt(formData.type), // แปลงให้เป็น number
+        stock: Number(formData.stock),
+        description: formData.description,
+        storeId: Number(storeId),
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setApiResponse(data.message || "เกิดข้อผิดพลาดบางอย่าง");
+    } else {
+      setApiResponse("เพิ่มสินค้าสำเร็จ!");
+      setFormData({
+        productName: "",
+        price: 0,
+        unit: "",
+        type: "",
+        stock: 0,
+        description: "",
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setApiResponse(data.message);
-      } else {
-        setApiResponse("เพิ่มสินค้าสำเร็จ!");
-        setFormData({
-          productName: "",
-          price: 0,
-          unit: "",
-          type: "",
-          stock: 0,
-          description: "",
-        });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setApiResponse("เพิ่มสินค้าไม่สำเร็จ!");
     }
-  };
+  } catch (error) {
+    console.error("Error:", error);
+    setApiResponse("เพิ่มสินค้าไม่สำเร็จ!");
+  }
+};
 
   return (
     <div className="grid grid-cols-[1.5fr_2fr]">
@@ -129,13 +127,41 @@ export default function AddProduct() {
                 className="text-lg border border-gray-400 rounded-lg w-1/6 px-2 mr-2"
                 placeholder="ราคา"
               />
-              {/* <p className="text-xl font-extralight">ต่อ</p> */}
-              {/* <Input type="number" min="1" name="number" className="text-lg border border-gray-400 rounded-lg px-2 w-1/8 mr-2" placeholder="จำนวน"/> */}
+              <Select 
+                value={formData.unit}
+                onValueChange={(value) => setFormData({ ...formData, unit: value })}
+              >
+                <SelectTrigger className="border-gray-400 w-1/6">
+                  <SelectValue placeholder="หน่วยนับ"/>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="kg">กิโลกรัม</SelectItem>
+                    <SelectItem value="liter">ลิตร</SelectItem>
+                    <SelectItem value="piece">ชิ้น</SelectItem>
+                    <SelectItem value="box">กล่อง</SelectItem>
+                    <SelectItem value="bottle">ขวด</SelectItem>
+                    <SelectItem value="pack">แพ็ค</SelectItem>
+                    <SelectItem value="bag">ถุง</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {/* <Button className="bg-green-500 text-white rounded-lg px-4 py-2">
+                <Plus></Plus>เพิ่มราคา
+              </Button> */}
+            </div>
+          </div>
+          <div className="flex items-center mt-2 space-x-2">
+            <div className="w-1/6">
+              <div className="flex justify-between items-center mt-2">
+                <label className="text-2xl font-bold w-full">ชนิดสินค้า</label>
+              </div>
               <Select
                 value={formData.type}
                 onValueChange={(value) =>
                   setFormData({ ...formData, type: value })
                 }
+                
               >
                 <SelectTrigger className="w-full border-gray-400 mt-2">
                   <SelectValue placeholder="ชนิดสินค้า" />
@@ -151,29 +177,6 @@ export default function AddProduct() {
                       </SelectItem>
                     ))}
                   </SelectGroup>
-                </SelectContent>
-              </Select>
-              <Button className="bg-green-500 text-white rounded-lg px-4 py-2">
-                <Plus></Plus>เพิ่มราคา
-              </Button>
-            </div>
-          </div>
-          <div className="flex items-center mt-2 space-x-2">
-            <div className="w-1/6">
-              <div className="flex justify-between items-center mt-2">
-                <label className="text-2xl font-bold w-full">ชนิดสินค้า</label>
-              </div>
-              <Select
-                value={formData.type}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, type: value })
-                }
-              >
-                <SelectTrigger className="w-full border-gray-400 mt-2">
-                  <SelectValue placeholder="ชนิดสินค้า" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup></SelectGroup>
                 </SelectContent>
               </Select>
             </div>
