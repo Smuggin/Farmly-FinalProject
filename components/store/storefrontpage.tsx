@@ -21,6 +21,8 @@ type Product = {
   category: {
     name: string;
   };
+  store: { name: string }; // ✅ เพิ่มให้ตรงกับ ProductSection
+  href: string; // ✅ ด้วย
 };
 
 type Store = {
@@ -32,15 +34,16 @@ type Store = {
 };
 
 export default function StorefrontPage() {
-  const { id } = useParams(); // grab store id from URL
+  const storeId = useParams().storeId as string;
+
   const [store, setStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    if (!id) return;
+    if (!storeId) return;
     const fetchStore = async () => {
       try {
-        const res = await fetch(`/api/store/${id}`);
+        const res = await fetch(`/api/store/${storeId}`);
         const data = await res.json();
         console.log("data", data)
         setStore(data);
@@ -52,7 +55,7 @@ export default function StorefrontPage() {
     }; 
     
     fetchStore();
-  }, [id]);
+  }, [storeId]);
 
   const storeImage = store?.images?.[0]?.url || '/store-avatar.png';
   console.log("StoreImage: ", storeImage)
