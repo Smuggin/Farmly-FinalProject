@@ -22,6 +22,8 @@ model User {
   orders     Order[]
   reviews    Review[]
   store      Store?
+  threads    Thread[] // ความสัมพันธ์กับกระทู้ที่ผู้ใช้ตั้ง
+  comments   Comment[] // ความสัมพันธ์กับคอมเมนต์ที่ผู้ใช้เขียน
 }
 
 model Store {
@@ -120,6 +122,27 @@ model Review {
   createdAt DateTime @default(now())
   product   Product  @relation(fields: [productId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Thread {
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String
+  authorId  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author    User      @relation(fields: [authorId], references: [id])
+  comments  Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  threadId  Int
+  authorId  Int
+  createdAt DateTime @default(now())
+  author    User     @relation(fields: [authorId], references: [id])
+  thread    Thread   @relation(fields: [threadId], references: [id])
 }
 
 enum Role {
