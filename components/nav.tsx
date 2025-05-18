@@ -79,8 +79,14 @@ const Navbar: React.FC = () => {
                     ที่อยู่
                   </button>
                 </div>
+                            <div className="hidden sm:ml-2 sm:block">
+                <button  className="gap-1 border border-gray-300 px-6 flex py-3 rounded-md dark:border-accent text-base sm:text-sm text-gray-500 font-medium items-center focus:border-green-500 focus:outline-1">
+                  <a href="/community">
+                  ชุมชน
+                  </a>
+                </button>
               </div>
-
+              </div>
               {/* Right Side: Cart + Profile/Login */}
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 <button
