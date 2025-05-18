@@ -1,4 +1,3 @@
-
 import { notFound } from "next/navigation";
 import { Minus, Plus, Heart, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";

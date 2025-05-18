@@ -38,12 +38,11 @@ export default async function Home({
       <Navbar />
       <MiniNav />
       <BannerSection />
-      <div className="grid grid-cols-[.10fr_1fr]">
-        <div className="w-full px-4">
+      <div className="grid grid-cols-[.15fr_.9fr]">
+        <div className="w-full pl-4">
           <MiniMenus categories={categories} />
         </div>
         <div className="grid grid-cols-4 mx-auto gap-6 mt-4">
-          
           <ProductSection products={products} />
         </div>
         <BenefitsSection />

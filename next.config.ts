@@ -6,7 +6,8 @@ const nextConfig: NextConfig = {
     domains: [
         'ohtsnsoxzgjbgatxkknb.supabase.co',
         'platform-lookaside.fbsbx.com',
-        'ui-avatars.com'
+        'ui-avatars.com',
+        'lh3.googleusercontent.com'
       ],
     remotePatterns: [
       {

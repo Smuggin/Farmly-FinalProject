@@ -19,9 +19,11 @@ model User {
   role       Role      @default(CUSTOMER)
   profilePic String?
   addresses  Address[]
+  Comment    Comment[]
   orders     Order[]
   reviews    Review[]
   store      Store?
+  Thread     Thread[]
 }
 
 model Store {
@@ -120,6 +122,27 @@ model Review {
   createdAt DateTime @default(now())
   product   Product  @relation(fields: [productId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  threadId  Int
+  authorId  Int
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [authorId], references: [id])
+  Thread    Thread   @relation(fields: [threadId], references: [id])
+}
+
+model Thread {
+  id        Int       @id @default(autoincrement())
+  title     String
+  content   String
+  authorId  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  Comment   Comment[]
+  User      User      @relation(fields: [authorId], references: [id])
 }
 
 enum Role {

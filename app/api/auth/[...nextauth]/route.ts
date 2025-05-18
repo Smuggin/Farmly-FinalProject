@@ -55,12 +55,29 @@
           token.id = user.id;
           token.email = user.email;
         }
+        
+        if (user?.email) {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: user.email },
+            include: {
+              store: true, // assuming `store` is a relation on the `user`
+            }
+          });
+
+        if (dbUser) {
+            token.user_id = dbUser.id; // ✅ real DB user id
+          }
+        else {
+          token.user_id = null;
+        }
+        }
         return token;
       },
       async session({ session, token }) {
         if (session.user) {
           session.user.id = token.id as string;
           session.user.email = token.email as string;
+          session.user.user_id = token.user_id as string; // ✅ real DB user id
         }
         return session;
       },

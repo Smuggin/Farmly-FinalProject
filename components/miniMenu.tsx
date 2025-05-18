@@ -6,36 +6,38 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-
+import React from "react";
 interface MiniMenusProps {
   categories: { id: number; name: string }[];
 }
 
 export default function MiniMenus({ categories }: MiniMenusProps) {
   return (
-    <NavigationMenu className="flex flex-col w-48 mt-4 ml-3 rounded-xl border py-2">
-      <NavigationMenuList className="flex flex-col text-left items-start justify-start gap-2">
-        <NavigationMenuItem className="w-full text-left text-md">
-          <NavigationMenuLink asChild>
-            <Link href="/">ทั้งหมด</Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-        <Separator />
-
-        {categories.map((category) => (
-          <NavigationMenuItem
-            key={category.id}
-            className="w-full text-left text-md"
+    <div className="flex flex-col w-full mt-4 ml-3 rounded-xl border py-2">
+      <div className="flex flex-col items-stretch gap-2 w-full">
+        <div className="w-full">
+          <Link
+            href="/"
+            className="block w-full text-left px-4 py-2 text-md rounded"
           >
-            <NavigationMenuLink asChild>
-              <Link href={`/?category=${encodeURIComponent(category.name)}`}>
+            ทั้งหมด
+          </Link>
+        </div>
+        <Separator className="my-1" />
+        {categories.map((category) => (
+          <React.Fragment key={category.id}>
+            <div key={category.id} className="w-full">
+              <Link
+                href={`/?category=${encodeURIComponent(category.name)}`}
+                className="block w-full text-left px-4 py-2 text-md rounded"
+              >
                 {category.name}
               </Link>
-            </NavigationMenuLink>
-            <Separator />
-          </NavigationMenuItem>
+            </div>
+            <Separator className="my-1" />
+          </React.Fragment>
         ))}
-      </NavigationMenuList>
-    </NavigationMenu>
+      </div>
+    </div>
   );
 }
