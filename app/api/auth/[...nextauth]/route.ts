@@ -75,7 +75,8 @@
               data: {
                 name: user.name ?? "No Name",
                 email: user.email!,
-                password: "OAuth2 "
+                password: "OAuth2 ",
+                profilePic: user.image ?? ""
               },
             });
           }
@@ -90,6 +91,7 @@
                 name: user.name ?? "No Name",
                 email: user.email!,
                 password: "OAuth2 ",
+                profilePic: user.image ?? ""
               },
             });
           }
@@ -104,6 +106,7 @@
                 name: user.name ?? "No Name",
                 email: user.email!,
                 password: "OAuth2 ",
+                profilePic: user.image ?? ""
               },
             });
           }

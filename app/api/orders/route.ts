@@ -15,33 +15,34 @@ export async function GET() {
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+  where: { email: session.user.email },
   });
 
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-
+  
   const orders = await prisma.order.findMany({
   where: { userId: user.id },
   include: {
-          address: true,
-          user: true,
-          orderItems: {
-
-            
-            include: {
-              product: {
-                select: {
-                  name: true,
-                  image: true,
-                  price: true,
-                  store: true,
-                  },
+        address: true,
+        user: true,
+        orderItems: {
+          include: {
+            product: {
+              select: {
+                name: true,
+                price: true,
+                store: {
+                  select: {
+                    name: true,
+                    images: true, // if you want the store's images
+                  }
                 },
-              },
-            
-            
+                images: true // if you want the product's images
+              }
+            }
+            },
           },
         },
         orderBy: {
@@ -56,7 +57,7 @@ export async function GET() {
   shippingAddress: `${order.address.street}, ${order.address.city}, ${order.address.state}`,
   status: mapOrderStatus(order.status),
   shopName: order.orderItems[0]?.product.store.name ?? "ไม่ทราบร้าน",
-  shopImage: order.orderItems[0]?.product.store.image ?? "/default-shop.png",
+  shopImage: order.orderItems[0]?.product.store.images[0]?.url ?? "/default-shop.png",
   totalPrice: order.orderItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
   items: order.orderItems.map(item => ({
     product: { name: item.product.name },
