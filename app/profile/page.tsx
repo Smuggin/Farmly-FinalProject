@@ -1,53 +1,45 @@
-// app/profile/page.tsx or wherever your route is
+// app/profile/page.tsx
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { PrismaClient } from "@prisma/client";
-import { Skeleton } from "@/components/ui/skeleton"; // shadcn/ui component
 import Image from "next/image";
-
+import Link from "next/link";
+import { format } from "date-fns";
+import { th } from "date-fns/locale";
 const prisma = new PrismaClient();
-
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user?.email) {
-    return <div className="p-6 text-red-500">Unauthorized</div>;
+    return <div className="p-6 text-center">กรุณาเข้าสู่ระบบ</div>;
   }
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-  });
-
-  const latestOrder = await prisma.order.findFirst({
-    where: { userId: user?.id },
     include: {
-      address: true,
-      orderItems: {
+      addresses: true,
+      orders: {
         include: {
-          product: {
-            select: {
-              name: true,
-              price: true,
-              store: {
-                select: {
-                  name: true,
-                  images: true,
-                },
-              },
-              images: true,
+          orderItems: {
+            include: {
+              product: true,
             },
           },
         },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1, // แสดงคำสั่งซื้อล่าสุด
       },
     },
-    orderBy: {
-      createdAt: "desc",
-    },
   });
-  console.log("Latest Order", latestOrder);
+
   if (!user) {
-    return <div className="p-6 text-red-500">User not found</div>;
+    return <div className="p-6 text-center">ไม่พบข้อมูลผู้ใช้</div>;
   }
+
+  const latestOrder = user.orders[0];
+  const mainAddress = user.addresses[0];
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -142,15 +134,21 @@ export default async function ProfilePage() {
       <div className="px-6 py-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-2">การตั้งค่า</h2>
         <div className="bg-white shadow rounded-lg p-4 space-y-3">
+          <Link href="/profile/edit">
           <button className="block w-full text-left text-gray-700 hover:text-green-600">
             แก้ไขข้อมูลส่วนตัว
           </button>
+          </Link>
+          <Link href="/profile/change-password">
           <button className="block w-full text-left text-gray-700 hover:text-green-600">
             เปลี่ยนรหัสผ่าน
           </button>
-          <button className="block w-full text-left text-red-500 hover:underline">
-            ออกจากระบบ
-          </button>
+            </Link>
+          <form action="/api/auth/signout" method="POST">
+            <button type="submit" className="block w-full text-left text-red-500 hover:underline">
+              ออกจากระบบ
+            </button>
+          </form>
         </div>
       </div>
     </div>
