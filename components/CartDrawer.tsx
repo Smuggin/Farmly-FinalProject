@@ -45,7 +45,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, setIsOpen }) => {
                     />
                     <div className="flex flex-col flex-1 px-4">
                         <p className="font-medium w-full">{item.name}</p>
-                        <p className="text-muted-foreground text-xs">฿{item.price.toFixed(2)}</p>
+                        <p className="text-muted-foreground text-xs">x{item.quantity}{item.unit} -  ฿{(item.price * item.quantity).toFixed(2)}</p>
                     </div>
                     <Button
                         variant="ghost"

@@ -27,7 +27,25 @@ export default function DashboardPageClient({
   profilePic: string;
 }) {
   const [store, setStore] = useState<Store | null>(null);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/orders/store")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setOrders(data); // ✅ use orderItems from object
+        } else {
+          console.error("Invalid response from /api/orders/store:", data);
+          setOrders([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Error loading orders:", err);
+        setOrders([]);
+      });
+  }, []);
 
   useEffect(() => {
     const fetchStore = async () => {
@@ -44,9 +62,7 @@ export default function DashboardPageClient({
 
     fetchStore();
   }, [storeId]);
-
   const storeImage = store?.images?.[0]?.url || '/store-avatar.png';
-
   if (loading) return <div className="p-6">กำลังโหลดข้อมูล...</div>;
   if (!store) return <div className="p-6 text-red-500">ไม่พบร้านค้า</div>;
 
@@ -67,9 +83,9 @@ export default function DashboardPageClient({
         </div>
 
         <nav className="mt-6 space-y-2">
-          <Button variant="ghost" className="w-full justify-start">สินค้า</Button>
-          <Button variant="ghost" className="w-full justify-start">หมวดหมู่</Button>
-          <Button variant="ghost" className="w-full justify-start">ออเดอร์</Button>
+            <Button variant="ghost" className="w-full justify-start">สินค้า</Button>
+            <Button variant="ghost" className="w-full justify-start">หมวดหมู่</Button>
+            <Button variant="ghost" className="w-full justify-start">ออเดอร์</Button>
         </nav>
       </aside>
 
@@ -134,17 +150,19 @@ export default function DashboardPageClient({
         <div className="grid grid-cols-3 gap-6">
           <div className="rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">รายได้</p>
-            <h3 className="text-2xl font-bold">฿ 27,843</h3>
+            <h3 className="text-2xl font-bold">฿ {orders.reduce((sum, order) => sum + (order.price || 0), 0)}</h3>
             <p className="text-xs text-gray-500 mt-1">ณ วันที่ 18 พ.ค. 2025</p>
           </div>
           <div className="rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">ออเดอร์</p>
-            <h3 className="text-2xl font-bold">42</h3>
+            <h3 className="text-2xl font-bold">{orders.length}</h3>
             <p className="text-xs text-gray-500 mt-1">ณ วันที่ 18 พ.ค. 2025</p>
           </div>
           <div className="rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">ที่ต้องส่ง</p>
-            <h3 className="text-2xl font-bold">12</h3>
+            <h3 className="text-2xl font-bold">
+              {orders.filter(order => order.status === 'pending').length}
+            </h3>
             <p className="text-xs text-gray-500 mt-1">ณ วันที่ 18 พ.ค. 2025</p>
           </div>
         </div>

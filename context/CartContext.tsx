@@ -9,6 +9,8 @@ export type CartItem = {
   price: number;
   category: { name: string };
   store: { name: string };
+  quantity: number;
+  unit: string;
 };
 
 type CartContextType = {
@@ -22,20 +24,35 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  // Restore from sessionStorage
+  // Load from localStorage when the component mounts
   useEffect(() => {
-    const saved = sessionStorage.getItem("cart");
+    const saved = localStorage.getItem("cart");
     if (saved) {
       try {
         setItems(JSON.parse(saved));
       } catch {
-        sessionStorage.removeItem("cart");
+        localStorage.removeItem("cart");
       }
     }
+
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "cart" && event.storageArea === localStorage) {
+        try {
+          const updated = event.newValue ? JSON.parse(event.newValue) : [];
+          setItems(updated);
+        } catch {
+          setItems([]);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
+  // Save to localStorage whenever items change
   useEffect(() => {
-    sessionStorage.setItem("cart", JSON.stringify(items));
+    localStorage.setItem("cart", JSON.stringify(items));
   }, [items]);
 
   const addItem = (item: CartItem) => {
@@ -45,9 +62,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const removeItem = (index: number) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
-  
+
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem  }}>
+    <CartContext.Provider value={{ items, addItem, removeItem }}>
       {children}
     </CartContext.Provider>
   );

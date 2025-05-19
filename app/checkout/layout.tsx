@@ -8,14 +8,14 @@ type LayoutProps = {
   children: ReactNode;
 };
 
-export default function HistoryLayout({ children }: LayoutProps) {
+export default function CheckoutLayout({ children }: LayoutProps) {
   return (
     <SessionWrapper>
     <div className="mx-auto max-w-7xl">
       {/* Navbar */}
       <NavBar />
       <MiniNav />
-      
+
       {/* Main Content */}
       <main className="container mx-auto">{children}</main>
     </div>

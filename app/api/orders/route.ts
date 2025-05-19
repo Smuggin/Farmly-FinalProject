@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   const session = await getServerSession(authOptions);
-  console.log("Session", session)
+
   if (!session || !session.user?.email) {
     console.log("No session found")
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
