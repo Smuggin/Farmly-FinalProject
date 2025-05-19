@@ -19,7 +19,6 @@ model User {
   role       Role      @default(CUSTOMER)
   profilePic String?
   addresses  Address[]
-  Comment    Comment[]
   orders     Order[]
   reviews    Review[]
   store      Store?

@@ -20,6 +20,7 @@ import Logo from "@/app/dist/FarmlyNeighbor_logo_prototype_2.png";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 import CartDrawer from "@/components/CartDrawer";
+import { useRouter } from "next/navigation";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -29,7 +30,14 @@ const Navbar: React.FC = () => {
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
   const [isCartOpen, setIsCartOpen] = useState(false);
-
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (searchQuery.trim() !== "") {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
   return (
     <>
       <Disclosure as="nav" className="bg-white dark:bg-gray-800">
@@ -62,16 +70,25 @@ const Navbar: React.FC = () => {
                   </a>
                 </div>
                 <div className="hidden sm:block leading-none max-w-md ml-4 font-bold text-xl">
-                  <a href="/">Farmly<br />Neighbor</a>
+                  <a href="/">
+                    Farmly
+                    <br />
+                    Neighbor
+                  </a>
                 </div>
                 <div className="hidden sm:block sm:ml-6 max-w-md w-full">
-                  <input
-                    id="search"
-                    name="search"
-                    type="search"
-                    placeholder="หาสินค้าที่คุณต้องการ"
-                    className="h-full w-full border rounded-md outline-1 bg-white/5 px-4 py-2 text-base border-gray-300 placeholder:text-gray-500 focus:border-green-500 focus:outline-1 sm:text-sm"
-                  />
+                  <form onSubmit={handleSearch} className="flex w-full">
+                    <input
+                      id="search"
+                      name="search"
+                      type="search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="หาสินค้าที่คุณต้องการ"
+                      className="h-full w-full border rounded-md outline-1 bg-white/5 px-4 py-2 text-base border-gray-300 placeholder:text-gray-500 focus:border-green-500 focus:outline-1 sm:text-sm"
+                    />
+                    
+                  </form>
                 </div>
                 <div className="hidden sm:ml-2 sm:block">
                   <button className="gap-1 border border-gray-300 px-6 flex py-3 rounded-md dark:border-accent text-base sm:text-sm text-gray-500 font-medium items-center focus:border-green-500 focus:outline-1">
@@ -79,13 +96,11 @@ const Navbar: React.FC = () => {
                     ที่อยู่
                   </button>
                 </div>
-                            <div className="hidden sm:ml-2 sm:block">
-                <button  className="gap-1 border border-gray-300 px-6 flex py-3 rounded-md dark:border-accent text-base sm:text-sm text-gray-500 font-medium items-center focus:border-green-500 focus:outline-1">
-                  <a href="/community">
-                  ชุมชน
-                  </a>
-                </button>
-              </div>
+                <div className="hidden sm:ml-2 sm:block">
+                  <button className="gap-1 border border-gray-300 px-6 flex py-3 rounded-md dark:border-accent text-base sm:text-sm text-gray-500 font-medium items-center focus:border-green-500 focus:outline-1">
+                    <a href="/community">ชุมชน</a>
+                  </button>
+                </div>
               </div>
               {/* Right Side: Cart + Profile/Login */}
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -173,7 +188,7 @@ const Navbar: React.FC = () => {
           </div>
         )}
       </Disclosure>
-    <CartDrawer isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
+      <CartDrawer isOpen={isCartOpen} setIsOpen={setIsCartOpen} />
     </>
   );
 };
