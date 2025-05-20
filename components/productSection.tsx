@@ -4,10 +4,7 @@ import ProductCard from "@/components/products/productCard";
 type Product = {
   id: number;
   name: string;
-  images: {
-    id: number;
-    url: string;
-  }[];
+  coverImage: string;
   price: number;
   category: {
     name: string;
@@ -30,7 +27,7 @@ export default function ProductSection({ products }: ProductSectionProps) {
           key={product.id}
           product={{
             ...product,
-            image: product.images?.[0]?.url ?? null, // 👈 ใช้รูปแรกเป็นภาพหลัก
+            image: product.coverImage, // 👈 ใช้รูปแรกเป็นภาพหลัก
             href: product.href ?? `/product/${product.id}`,
           }}
         />

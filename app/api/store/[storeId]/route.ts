@@ -23,7 +23,6 @@ export async function GET(
         products: {
           include: {
             category: true,
-            images: true,
           },
         },
       },
@@ -43,10 +42,7 @@ export async function GET(
       products: store.products.map((p) => ({
         id: p.id,
         name: p.name,
-        images: p.images.map((img) => ({
-          id: img.id,
-          url: img.url,
-        })),
+        coverImage: p.coverImage,
         price: p.price,
         category: { name: p.category.name },
         store: { name: store.name },

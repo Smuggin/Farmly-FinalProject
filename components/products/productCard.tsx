@@ -11,7 +11,7 @@ interface ProductCardProps {
   product: {
     name: string;
     href: string;
-    image?: string | null;
+    image: string;
     price: number;
     category: {
       name: string;
@@ -37,13 +37,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <HeartIcon className="size-4" />
         </Button>
         <Link href={product.href}>
-          <Image
-            className="w-full object-cover"
-            src={product.image || placeholderImage}
-            width={225}
-            height={200}
-            alt={product.name}
-          />
+          <div className="relative w-[225px] h-[200px] overflow-hidden rounded-t-md">
+            <Image
+              src={product.image || placeholderImage}
+              alt={product.name}
+              fill
+              className="object-cover"
+            />
+          </div>
         </Link>
       </figure>
       <CardContent className="px-4 py-0">

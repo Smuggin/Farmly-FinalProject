@@ -39,7 +39,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, setIsOpen }) => {
                 <CardContent className="p-0 flex flex-col gap-1 w-full">
                 <div className="flex justify-between">
                     <img
-                        src={item.image || "https://upload.wikimedia.org/wikipedia/commons/c/cd/1%261_logo.svg"}
+                        src={item.coverImage || "https://upload.wikimedia.org/wikipedia/commons/c/cd/1%261_logo.svg"}
                         alt={item.name}
                         className="w-24 h-24 object-cover rounded-md"
                     />

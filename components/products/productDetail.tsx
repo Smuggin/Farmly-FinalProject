@@ -24,7 +24,7 @@ export default async function ProductDetail({ id }: { id: string }) {
         <div className="w-[500px] rounded-md pl-7">
           <AspectRatio ratio={1 / 1}>
             <Image
-              src={product.image || "/placeholder.jpg"}
+              src={product.coverImage || "/placeholder.jpg"}
               alt={product.name}
               width={500}
               height={500}

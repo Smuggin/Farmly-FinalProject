@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { productName, price, unit, type, stock, description, storeId } = body;
+    const { productName, price, unit, type, stock, description, storeId, coverImage } = body;
 
     const store = await prisma.store.findUnique({
       where: { id: Number(storeId) },
@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
         description,
         storeId: Number(storeId),
         categoryId: type,
+        coverImage: coverImage
       },
     });
 

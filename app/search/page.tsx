@@ -53,7 +53,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <MiniMenus categories={categories} />
         </div>
         <div className="grid grid-cols-4 mx-auto gap-6 mt-4">
-          <ProductSection products={products} />
+          <ProductSection
+            products={products.map((product) => ({
+              ...product,
+              coverImage: product.coverImage ?? "",
+            }))}
+          />
         </div>
         <BenefitsSection />
       </div>

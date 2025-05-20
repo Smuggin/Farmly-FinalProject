@@ -17,7 +17,7 @@ type Product = {
   id: number;
   name: string;
   price: number;
-  images: File[];
+  coverImage: string; // ✅ เปลี่ยนเป็น string[] เพื่อให้ตรงกับ ProductSection
   category: {
     name: string;
   };

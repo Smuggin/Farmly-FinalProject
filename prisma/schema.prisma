@@ -19,11 +19,11 @@ model User {
   role       Role      @default(CUSTOMER)
   profilePic String?
   addresses  Address[]
+  comments   Comment[]
   orders     Order[]
   reviews    Review[]
   store      Store?
-  threads    Thread[] // ความสัมพันธ์กับกระทู้ที่ผู้ใช้ตั้ง
-  comments   Comment[] // ความสัมพันธ์กับคอมเมนต์ที่ผู้ใช้เขียน
+  threads    Thread[]
 }
 
 model Store {
@@ -65,6 +65,7 @@ model Product {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   unit        String?
+  coverImage  String?
   images      File[]
   orderItems  OrderItem[]
   category    Category    @relation(fields: [categoryId], references: [id])
@@ -131,8 +132,8 @@ model Thread {
   authorId  Int
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  author    User      @relation(fields: [authorId], references: [id])
   comments  Comment[]
+  author    User      @relation(fields: [authorId], references: [id])
 }
 
 model Comment {

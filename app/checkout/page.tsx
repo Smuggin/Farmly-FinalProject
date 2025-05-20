@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +11,7 @@ import { useCart } from "@/context/CartContext";
 
 export default function CheckoutPage() {
   const { items } = useCart();
-
+  const placeholderImage = "https://bundui-images.netlify.app/products/04.jpeg";
   return (
     <div className="px-8 mb-6">
       <div className="mb-6">
@@ -37,10 +36,26 @@ export default function CheckoutPage() {
 
       <div className="mb-6">
         <h2 className="text-lg font-medium mb-2">ออร์เดอร์ของคุณ</h2>
+        <div className="flex items-center p-4 gap-4 border border-green-500 rounded-md mb-4">
+          <div className="w-16"></div>
+          <div className="flex-1">
+            <div className="text-left">ชื่อสวน</div>
+          </div>
+          <div className="text-center w-20">ราคา</div>
+          <div className="text-center w-10">จำนวน</div>
+          <div className="text-right w-20">ราคารวม</div>
+        </div>
         <div className="border rounded-md divide-y">
           {items.map((item, index) => (
             <div key={index} className="flex items-center p-4 gap-4">
-              <div className="bg-gray-200 w-16 h-16 rounded-md" />
+              <div className="relative w-16 h-16 rounded-md">
+                <Image
+                  src={item.coverImage || placeholderImage}
+                  alt={item.name}
+                  fill
+                  className="object-cover rounded-md"
+                />
+              </div>
               <div className="flex-1">
                 <div className="font-light text-xs leading-2 text-green-600">
                   {item.store.name}
@@ -49,7 +64,9 @@ export default function CheckoutPage() {
               </div>
               <div className="text-center w-20">{item.price}</div>
               <div className="text-center w-10">{item.quantity}</div>
-              <div className="text-right w-20">฿ {(item.price * item.quantity).toFixed(2)}</div>
+              <div className="text-right w-20">
+                ฿ {(item.price * item.quantity).toFixed(2)}
+              </div>
             </div>
           ))}
         </div>
@@ -89,7 +106,12 @@ export default function CheckoutPage() {
             <div className="text-right space-y-1 text-sm">
               <div className="flex justify-between">
                 <span>ยอดค่าสินค้า</span>
-                <span>{items.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)} ฿</span>
+                <span>
+                  {items
+                    .reduce((sum, item) => sum + item.price * item.quantity, 0)
+                    .toFixed(2)}{" "}
+                  ฿
+                </span>
               </div>
               {/* <div className="flex justify-between">
                 <span>ส่วนลดคูปอง</span>
@@ -101,7 +123,15 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between font-semibold text-base">
                 <span>ราคารวม</span>
-                <span>{(items.reduce((sum, item) => sum + item.price * item.quantity, 0) + 34).toFixed(2)}  ฿</span>
+                <span>
+                  {(
+                    items.reduce(
+                      (sum, item) => sum + item.price * item.quantity,
+                      0
+                    ) + 34
+                  ).toFixed(2)}{" "}
+                  ฿
+                </span>
               </div>
             </div>
           </CardContent>

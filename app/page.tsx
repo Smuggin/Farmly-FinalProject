@@ -32,7 +32,6 @@ export default async function Home({
       createdAt: "desc",
     },
   });
-
   return (
     <div className="mx-auto max-w-7xl">
       <Navbar />
@@ -43,7 +42,12 @@ export default async function Home({
           <MiniMenus categories={categories} />
         </div>
         <div className="grid grid-cols-4 mx-auto gap-6 mt-4">
-          <ProductSection products={products} />
+          <ProductSection
+            products={products.map((product) => ({
+              ...product,
+              coverImage: product.coverImage ?? "",
+            }))}
+          />
         </div>
         <BenefitsSection />
       </div>

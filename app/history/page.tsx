@@ -57,7 +57,12 @@ const HistoryPage = () => {
 
       <div className="space-y-4">
         {filteredOrders.length > 0 ? (
-          filteredOrders.map((order) => <OrderCard key={order.id} {...order} />)
+          filteredOrders.map((order) => (
+            <OrderCard
+              key={order.id}
+              {...order}
+            />
+          ))
         ) : (
           <p className="text-gray-500 text-center">ไม่มีคำสั่งซื้อในหมวดหมู่นี้</p>
         )}

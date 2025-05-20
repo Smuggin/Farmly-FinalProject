@@ -5,7 +5,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 export type CartItem = {
   name: string;
   href: string;
-  image?: string | null;
+  coverImage?: string | null;
   price: number;
   category: { name: string };
   store: { name: string };
