@@ -48,6 +48,7 @@ export async function GET(
         store: { name: store.name },
         href: `/store/${store.id}/product/${p.id}`,
       })),
+      ownerId: store.ownerId
     };
 
     return NextResponse.json(payload);

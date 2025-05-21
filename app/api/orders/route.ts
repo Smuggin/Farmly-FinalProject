@@ -86,3 +86,65 @@ function mapOrderStatus(status: string): string {
       return "ทั้งหมด";
   }
 }
+
+export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user?.email) {
+    console.log("No session found");
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  const body = await req.json();
+
+  const { address, items } = body;
+
+  if (!address || !items || !Array.isArray(items) || items.length === 0) {
+    return NextResponse.json({ error: "Invalid request data" }, { status: 400 });
+  }
+
+  try {
+    // Create address first
+    const createdAddress = await prisma.address.create({
+      data: {
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        postalCode: address.postalCode,
+        country: address.country
+      }
+    });
+
+    const createdOrder = await prisma.order.create({
+      data: {
+        userId: user.id,
+        addressId: createdAddress.id,
+        orderItems: {
+          create: items.map((item: any) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        },
+        status: "PROCESSING", // or set dynamically from request if needed
+      },
+      include: {
+        address: true,
+        orderItems: true,
+      },
+    });
+
+    return NextResponse.json(createdOrder, { status: 201 });
+  } catch (error) {
+    console.error("Error creating order:", error);
+    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+  }
+}

@@ -71,13 +71,13 @@ function normalizeOrders(orderItems: any[]): NormalizedOrder[] {
   return Array.from(orderMap.values());
 }
 
-
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
+
   if (!session?.user?.user_id) {
     return <div className="p-6 text-center">กรุณาเข้าสู่ระบบ</div>;
   }
@@ -86,7 +86,12 @@ export default async function DashboardLayout({
     where: { ownerId: parseInt(session.user.user_id) },
     include: { images: true, products: true },
   });
-  
+
+  // If no store found, return blank
+  if (!store) {
+    redirect("/store/create");
+  }
+
   const rawOrderItems = await prisma.orderItem.findMany({
     where: {
       product: {
@@ -112,20 +117,15 @@ export default async function DashboardLayout({
 
   const normalizedOrders = normalizeOrders(rawOrderItems);
 
-  if (!store) {
-    // Redirect or render your “no store” UI
-    redirect("/store/create");
-  }
-
   return (
     <div className="flex min-h-screen">
       <Sidebar store={store} />
       <div className="flex-1 flex flex-col">
         <Navbar profilePic={session.user.image ?? "/default-avatar.png"} />
         <StoreProvider store={store}>
-            <OrderProvider orders={normalizedOrders}>
-                <main className="flex-1 p-6">{children}</main>
-            </OrderProvider>
+          <OrderProvider orders={normalizedOrders}>
+            <main className="flex-1 p-6">{children}</main>
+          </OrderProvider>
         </StoreProvider>
       </div>
     </div>

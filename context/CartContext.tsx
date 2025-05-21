@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 export type CartItem = {
+  id: string;
   name: string;
   href: string;
   coverImage?: string | null;

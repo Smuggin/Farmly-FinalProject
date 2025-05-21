@@ -148,6 +148,19 @@ const Navbar: React.FC = () => {
                       </MenuItem>
                       <MenuItem>
                         {({ active }) => (
+                          <a
+                            href="/history"
+                            className={classNames(
+                              active ? "bg-gray-100" : "",
+                              "block px-4 py-2 text-sm text-gray-700"
+                            )}
+                          >
+                            ประวัติการสั่งซื้อ
+                          </a>
+                        )}
+                      </MenuItem>
+                      <MenuItem>
+                        {({ active }) => (
                           <button
                             onClick={() => signOut()}
                             className={classNames(

@@ -2,16 +2,52 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Check, MapPin, Pencil } from "lucide-react";
+import { MapPin } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const { items } = useCart();
-  const placeholderImage = "https://bundui-images.netlify.app/products/04.jpeg";
+  const router = useRouter();
+  
+  const handleCheckout = async () => {
+    if (items.length === 0) return toast.error("Cart is empty");
+
+    const address = {
+      street: "25/13 ม.9 ต.ท่ายาง",
+      city: "เมือง",
+      state: "ชุมพร",
+      postalCode: "86000",
+      country: "ไทย"
+    };
+
+    const orderItems = items.map(item => ({
+      productId: item.id, // adjust based on how you encode ID in href
+      quantity: item.quantity,
+      price: item.price,
+    }));
+
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address, items: orderItems }),
+      });
+
+      if (!res.ok) throw new Error("Failed to create order");
+
+      toast.success("Order placed successfully!");
+      router.push("/checkout/order-success"); // Redirect after success
+    } catch (error) {
+      console.error("Checkout error:", error);
+      toast.error("เกิดข้อผิดพลาดระหว่างการชำระเงิน");
+    }
+  };
+
   return (
     <div className="px-8 mb-6">
       <div className="mb-6">
@@ -50,7 +86,7 @@ export default function CheckoutPage() {
             <div key={index} className="flex items-center p-4 gap-4">
               <div className="relative w-16 h-16 rounded-md">
                 <Image
-                  src={item.coverImage || placeholderImage}
+                  src={item.coverImage || ""}
                   alt={item.name}
                   fill
                   className="object-cover rounded-md"
@@ -139,7 +175,9 @@ export default function CheckoutPage() {
       </div>
 
       <div className="text-right">
-        <Button className="bg-black text-white px-6 py-2">ชำระเงิน</Button>
+        <Button onClick={handleCheckout} className="bg-black text-white px-6 py-2">
+          ชำระเงิน
+        </Button>
       </div>
     </div>
   );

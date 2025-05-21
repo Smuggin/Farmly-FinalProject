@@ -39,6 +39,7 @@ export default async function ProductDetail({ id }: { id: string }) {
             ฿ {product.price.toFixed(2)}
           </h3>
           <hr className="my-4" />
+          <h4 className="text-xl text-green-600 underline mb-4"><a href={`/store/${product.store.id}`}>{product.store.name}</a></h4>
           <AddToCartButton product={product}/>
           <div className="mt-4">
             สถานะสินค้า: {product.stock > 0 ? "มีสินค้า" : "สินค้าหมด"}
