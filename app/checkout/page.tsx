@@ -40,8 +40,11 @@ export default function CheckoutPage() {
 
       if (!res.ok) throw new Error("Failed to create order");
 
+        const data = await res.json();
+        const orderId = data.orderId;
+
       toast.success("Order placed successfully!");
-      router.push("/checkout/order-success"); // Redirect after success
+      router.push(`/checkout/order-success/${orderId}`); // Redirect after success
     } catch (error) {
       console.error("Checkout error:", error);
       toast.error("เกิดข้อผิดพลาดระหว่างการชำระเงิน");

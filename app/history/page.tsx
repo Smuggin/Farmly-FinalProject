@@ -11,25 +11,28 @@ const HistoryPage = () => {
   const { data: session, status } = useSession();
   const [selectedTab, setSelectedTab] = useState("ทั้งหมด");
   const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true); // 👈 add loading state
 
   useEffect(() => {
-  if (status === "authenticated") {
-    fetch("/api/orders")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setOrders(data); // ✅ set เมื่อเป็น array เท่านั้น
-        } else {
-          console.error("Invalid response from /api/orders:", data);
-          setOrders([]); // ✅ fallback ป้องกัน crash
-        }
-      })
-      .catch((err) => {
-        console.error("Error loading orders:", err);
-        setOrders([]); // ✅ fallback ป้องกัน crash
-      });
-  }
-}, [status]);
+    if (status === "authenticated") {
+      setLoading(true); // start loading
+      fetch("/api/orders")
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setOrders(data);
+          } else {
+            console.error("Invalid response from /api/orders:", data);
+            setOrders([]);
+          }
+        })
+        .catch((err) => {
+          console.error("Error loading orders:", err);
+          setOrders([]);
+        })
+        .finally(() => setLoading(false)); // stop loading
+    }
+  }, [status]);
 
   if (status === "loading") return <p>กำลังโหลด...</p>;
   if (status === "unauthenticated") return <p>กรุณาเข้าสู่ระบบก่อนดูประวัติคำสั่งซื้อ</p>;
@@ -56,13 +59,17 @@ const HistoryPage = () => {
       </div>
 
       <div className="space-y-4">
-        {filteredOrders.length > 0 ? (
-          filteredOrders.map((order) => (
-            <OrderCard
-              key={order.id}
-              {...order}
-            />
+        {loading ? (
+          // 👇 Skeleton placeholders
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="animate-pulse border p-4 rounded-md space-y-2">
+              <div className="h-4 bg-gray-300 rounded w-1/4" />
+              <div className="h-3 bg-gray-300 rounded w-1/2" />
+              <div className="h-3 bg-gray-300 rounded w-3/4" />
+            </div>
           ))
+        ) : filteredOrders.length > 0 ? (
+          filteredOrders.map((order) => <OrderCard key={order.id} {...order} />)
         ) : (
           <p className="text-gray-500 text-center">ไม่มีคำสั่งซื้อในหมวดหมู่นี้</p>
         )}

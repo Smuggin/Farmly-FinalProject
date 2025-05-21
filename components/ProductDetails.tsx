@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import ReviewList from "@/components/ReviewList";
+import ReviewForm from "./ReviewForm";
 
 export default function ProductDetails({
   description,
@@ -61,6 +62,7 @@ export default function ProductDetails({
         {activeTab === "reviews" && (
           <div>
             <ReviewList productId={productId} />
+            <ReviewForm productId={productId} />
           </div>
         )}
         {activeTab === "farmer" && (
