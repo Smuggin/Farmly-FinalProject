@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import ReviewList from "@/components/ReviewList";
+import ReviewForm from "./ReviewForm";
 
 export default function ProductDetails({
   description,
@@ -10,7 +11,7 @@ export default function ProductDetails({
   productId,
 }: {
   description: string;
-  store: { name: string; address?: string };
+  store: { name: string, description: string };
   productId: number;
 }) {
   const [activeTab, setActiveTab] = useState<
@@ -61,6 +62,7 @@ export default function ProductDetails({
         {activeTab === "reviews" && (
           <div>
             <ReviewList productId={productId} />
+            <ReviewForm productId={productId} />
           </div>
         )}
         {activeTab === "farmer" && (
@@ -70,7 +72,7 @@ export default function ProductDetails({
               <div className="text-3xl">{store.name}</div>
             </div>
             <div className="w-full border border-gray-400 rounded-md shadow-xl p-4">
-              <p className="text-xl font-light">{store.address}</p>
+              <p className="text-xl font-light">{store.description}</p>
             </div>
           </div>
         )}

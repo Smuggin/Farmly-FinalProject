@@ -50,12 +50,12 @@ export function MiniNav() {
               <ListItem href="/docs/primitives/typography" title="สมุนไพร">
                 ค้นพบยาสมุนไพรไทยหลากหลายๆชนิดได้ที่นี้
               </ListItem>
-              <ListItem href="/docs/primitives/typography" title="สมุนไพร">
+              {/* <ListItem href="/docs/primitives/typography" title="สมุนไพร">
                 ค้นพบยาสมุนไพรไทยหลากหลายๆชนิดได้ที่นี้
               </ListItem>
               <ListItem href="/docs/primitives/typography" title="สมุนไพร">
                 ค้นพบยาสมุนไพรไทยหลากหลายๆชนิดได้ที่นี้
-              </ListItem>
+              </ListItem> */}
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>

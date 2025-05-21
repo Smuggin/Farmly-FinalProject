@@ -8,6 +8,8 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      user_id?: string | null; // real DB user id
+      profilePic?: string | null; // real DB user profile picture
     };
   }
 

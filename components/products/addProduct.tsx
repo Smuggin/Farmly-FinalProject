@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import Image from "next/image";
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import Image from 'next/image';
+import { useEffect, useState, useRef } from 'react';
 import {
   Select,
   SelectContent,
@@ -9,158 +10,272 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
-import { useState } from "react";
-import { useParams } from 'next/navigation';
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { createClient } from '@supabase/supabase-js';
 
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function AddProduct() {
-    const params = useParams();
-    const storeId = params.id;
-    const [formData, setFormData] = useState({
-      productName: "",
-      price: 0,
-      unit: "",
-      type: "",
-      stock: 0,
-      description: "",
-    });
-    
-    const [image, setImage] = useState<File | null>(null)
-    const [apiResponse, setApiResponse] = useState("")
+  const params = useParams();
+  const storeId = Array.isArray(params.storeId)
+    ? params.storeId[0]
+    : params.storeId;
+  const router = useRouter();
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
-      console.log(formData);
-    };
+  const [formData, setFormData] = useState({
+    productName: '',
+    price: 0,
+    unit: '',
+    type: '',
+    stock: 0,
+    description: '',
+  });
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [apiResponse, setApiResponse] = useState('');
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-        // Handle form submission logic here
-      console.log("Form submitted");
-      console.log(formData);
-      
+  // Fetch categories on mount
+  useEffect(() => {
+    fetch('/api/categories')
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error('Failed to load categories', err));
+  }, []);
+
+  // Generate image preview
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl('');
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'price' || name === 'stock' ? Number(value) : value,
+    }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setApiResponse('');
+
+    // Upload image if selected
+    let imageUrl = '';
+    if (file) {
+      console.log('Uploading file:', file);
+      const ext = file.name.split('.').pop();
+      const fileName = `store-${storeId}/${Date.now()}.${ext}`;
+      const { data, error: uploadError } = await supabase.storage
+        .from('filesfarmly')
+        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+      console.log('Upload data:', data);
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        setApiResponse('Failed to upload image.');
+        return;
+      }
+
+      const { data: publicUrlData } =
+        supabase.storage.from('filesfarmly').getPublicUrl(data.path);
+      if (!publicUrlData || !publicUrlData.publicUrl) {
+        console.error('URL error: Failed to get public URL');
+        setApiResponse('Failed to get image URL.');
+        return;
+      }
+      imageUrl = publicUrlData.publicUrl;
+    }
+
+    // Send product data
     try {
-      const res = await fetch("/api/addproduct", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/addproduct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          productName: formData.productName,
-          price: formData.price,
-          unit: formData.unit,
-          type: formData.type,
-          stock: formData.stock,
-          description: formData.description,
-          storeId: storeId,
+          ...formData,
+          storeId: Number(storeId),
+          coverImage: imageUrl,
+          type: Number(formData.type),
         }),
       });
-
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Error adding product');
 
-      if (!res.ok) {
-        setApiResponse(data.message);
-      } else {
-        setApiResponse("เพิ่มสินค้าสำเร็จ!");
-        setFormData({
-          productName: "",
-          price: 0,
-          unit: "",
-          type: "",
-          stock: 0,
-          description: ""
-        });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setApiResponse("เพิ่มสินค้าไม่สำเร็จ!");
+      setApiResponse('เพิ่มสินค้าสำเร็จ!');
+      // Reset form
+      setFormData({ productName: '', price: 0, unit: '', type: '', stock: 0, description: '' });
+      setFile(null);
+      setTimeout(() => router.push(`/store/${storeId}`), 1500);
+    } catch (err: any) {
+      console.error(err);
+      setApiResponse(err.message);
     }
-    }
+  };
 
-    return ( 
-    <div className="grid grid-cols-[1.5fr_2fr]">
-        <div className="w-[500px] rounded-md pl-7">
-            <AspectRatio ratio={1 / 1} className="rounded-md bg-gray-300">
-            </AspectRatio>  
-        </div>
-        <div className="w-full">
-          <form onSubmit={handleSubmit}>
-          <div className="flex justify-between items-center">
-            <label className="text-2xl font-bold w-full">ชื่อสินค้า</label>
-          </div>
-          <input type="text" onChange={handleChange} name="productName" className="font-bold text-4xl border border-t border-gray-400 rounded-lg mt-2"/>
-          <div className="mt-2 align-middle my-auto">
-            <div className="flex justify-between items-center mt-2">
-              <label className="text-2xl font-bold w-full">ราคาต่อหน่วย</label>
+  return (
+    <div className="grid grid-cols-[1.5fr_2fr] gap-8">
+      {/* Image Preview & Upload */}
+      <div className="flex flex-col items-center">
+        <AspectRatio
+
+          ratio={1 / 1}
+          className="w-full bg-gray-100 rounded-md cursor-pointer"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          {previewUrl ? (
+            <Image
+              src={previewUrl}
+              alt="Preview"
+              fill
+              className="object-cover rounded"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-gray-400">
+              <Plus size={48} />
             </div>
-            <div className="flex items-center space-x-2 mt-2">
-              <Input type="number" onChange={handleChange} name="price" className="text-lg border border-gray-400 rounded-lg w-1/6 px-2 mr-2" placeholder="ราคา"/> 
-              {/* <p className="text-xl font-extralight">ต่อ</p> */}
-              {/* <Input type="number" min="1" name="number" className="text-lg border border-gray-400 rounded-lg px-2 w-1/8 mr-2" placeholder="จำนวน"/> */}
-              <Select 
-                value={formData.unit}
-                onValueChange={(value) => setFormData({ ...formData, unit: value })}
-              >
-                <SelectTrigger className="border-gray-400 w-1/6">
-                  <SelectValue placeholder="หน่วยนับ"/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="kg">กิโลกรัม</SelectItem>
-                    <SelectItem value="liter">ลิตร</SelectItem>
-                    <SelectItem value="piece">ชิ้น</SelectItem>
-                    <SelectItem value="box">กล่อง</SelectItem>
-                    <SelectItem value="bottle">ขวด</SelectItem>
-                    <SelectItem value="pack">แพ็ค</SelectItem>
-                    <SelectItem value="bag">ถุง</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <Button className="bg-green-500 text-white rounded-lg px-4 py-2"><Plus></Plus>เพิ่มราคา</Button>
-            </div>
-          </div>
-          <div className="flex items-center mt-2 space-x-2">
-            <div className="w-1/6">
-              <div className="flex justify-between items-center mt-2">
-                <label className="text-2xl font-bold w-full">ชนิดสินค้า</label>
-              </div>
-              <Select
-                value={formData.type}
-                onValueChange={(value) => setFormData({ ...formData, type: value })}
-              >
-                <SelectTrigger className="w-full border-gray-400 mt-2">
-                  <SelectValue placeholder="ชนิดสินค้า"/>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="w-1/5">
-              <div className="flex justify-between items-center mt-2">
-                <label className="text-2xl font-bold w-full">จำนวนสินค้า</label>
-              </div>
-              <Input type="number" min="1" name="stock" onChange={handleChange} className="text-lg border border-gray-400 rounded-lg mt-2 w-36" placeholder="จำนวนสินค้า"/>
-            </div>
-          </div>
-          <hr className="mt-6 items-center"/>
-          <div className="flex justify-between items-center mt-3">
-            <label className="text-2xl font-bold w-full">รายละเอียดสินค้า</label>
-          </div>
-          <Textarea   
-          className="max-h-full mt-2" 
-          name="description" 
-          onChange={handleChange} 
-          placeholder="เพิ่มรายละเอียดสินค้า"
-          />
-      <div className="flex justify-end mt-4 w-full">
-        <Button type="submit" className="bg-green-500 text-white rounded-lg px-4 py-2">บันทึก</Button>
+          )}
+        </AspectRatio>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          ref={fileInputRef}
+          className="hidden"
+        />
       </div>
+
+      {/* Product Form */}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name */}
+        <div>
+          <label className="block text-lg font-semibold">ชื่อสินค้า</label>
+          <Input
+            name="productName"
+            value={formData.productName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* Price & Unit */}
+        <div className="flex space-x-4">
+          <div className="flex-1">
+            <label className="block text-lg font-semibold">ราคาต่อหน่วย</label>
+            <Input
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="w-1/3">
+            <label className="block text-lg font-semibold">หน่วยนับ</label>
+            <Select
+              value={formData.unit}
+              onValueChange={(val) => setFormData((p) => ({ ...p, unit: val }))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="เลือกหน่วย" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {['kg','liter','piece','box','bottle','pack','bag'].map((u) => (
+                    <SelectItem key={u} value={u}>
+                      {u}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Category & Stock */}
+        <div className="flex space-x-4">
+          <div className="flex-1">
+            <label className="block text-lg font-semibold">หมวดสินค้า</label>
+            <Select
+              value={formData.type}
+              onValueChange={(val) => setFormData((p) => ({ ...p, type: val }))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="เลือกหมวด" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id.toString()}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-1/3">
+            <label className="block text-lg font-semibold">จำนวน</label>
+            <Input
+              type="number"
+              name="stock"
+              value={formData.stock}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block text-lg font-semibold">รายละเอียด</label>
+          <Textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {/* Submit */}
+        <div className="flex justify-end">
+          <Button type="submit" className="bg-green-600 text-white">
+            บันทึก
+          </Button>
+        </div>
+
+        {/* Response */}
+        {apiResponse && (
+          <p
+            className={`text-center mt-2 ${apiResponse.includes('สำเร็จ') ? 'text-green-600' : 'text-red-600'}`}
+          >
+            {apiResponse}
+          </p>
+        )}
       </form>
     </div>
-  </div> )
+  );
 }

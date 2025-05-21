@@ -15,9 +15,7 @@ export async function GET(req: Request) {
     where: { id: Number(id) },
     include: {
       category: true,
-      store: {
-        include: { address: true }, 
-      },
+      store: true
     },
   });
   if (!product) {

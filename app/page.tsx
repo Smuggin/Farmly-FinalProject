@@ -32,19 +32,22 @@ export default async function Home({
       createdAt: "desc",
     },
   });
-
   return (
     <div className="mx-auto max-w-7xl">
       <Navbar />
       <MiniNav />
       <BannerSection />
-      <div className="grid grid-cols-[.10fr_1fr]">
-        <div className="w-full px-4">
+      <div className="grid grid-cols-[.15fr_.9fr]">
+        <div className="w-full pl-4">
           <MiniMenus categories={categories} />
         </div>
         <div className="grid grid-cols-4 mx-auto gap-6 mt-4">
-          <div className="col-span-4">สินค้าทั้งหมด</div>
-          <ProductSection products={products} />
+          <ProductSection
+            products={products.map((product) => ({
+              ...product,
+              coverImage: product.coverImage ?? "",
+            }))}
+          />
         </div>
         <BenefitsSection />
       </div>

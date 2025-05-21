@@ -1,6 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import SessionWrapper from "./SessionWrapper"; // You'll create this
+import { CartProvider } from "@/context/CartContext";
+import { Toaster } from "sonner";
 
 const interFont = Inter({
   variable: "--font-inter",
@@ -21,7 +23,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${interFont.variable} antialiased`}>
         <SessionWrapper>
-          {children}
+          <CartProvider>
+            {children}
+            <Toaster richColors position="top-right" expand={false} duration={500} />
+          </CartProvider>
         </SessionWrapper>
       </body>
     </html>
