@@ -48,6 +48,11 @@ export default function Sidebar({
             ออเดอร์
           </Button>
         </Link>
+        <Link href="../../">
+          <Button variant="ghost" className="w-full justify-start">
+            กลับไปหน้าซื้อสินค้า
+          </Button>
+        </Link>
       </nav>
     </aside>
   );

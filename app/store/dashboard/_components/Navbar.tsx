@@ -23,9 +23,11 @@ const titles: Record<string, string> = {
     <div className="flex items-center justify-between p-4 border-b">
       {/* Page title based on dynamic route */}
       <h1 className="text-2xl font-semibold px-3">{title}</h1>
-
+            
+              
       {/* User menu */}
       <Menu as="div" className="relative">
+        
         <MenuButton className="rounded-full focus:outline-none">
           <img
             src={profilePic}
