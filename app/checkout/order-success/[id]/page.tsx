@@ -21,9 +21,6 @@ export default function OrderSuccessPage({ params }: OrderSuccessPageProps) {
 
       <div className="flex gap-4">
         <Button onClick={() => router.push("/")}>กลับไปหน้าร้าน</Button>
-        <Button className="bg-green-600" onClick={() => router.push(`/review/${orderId}`)}>
-          ให้คะแนนคำสั่งซื้อ
-        </Button>
         <Button variant="secondary" onClick={() => router.push("/history")}>
           ดูคำสั่งซื้อของฉัน
         </Button>
