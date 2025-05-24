@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { Trash2 } from "lucide-react"; // Trash icon
 import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -63,7 +64,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, setIsOpen }) => {
         </div>
 
         <DrawerFooter className="flex flex-col gap-2">
+          <Link href="/checkout">
           <Button className="w-full">ไปยังหน้าชำระเงิน</Button>
+          </Link>
           <DrawerClose asChild>
             <Button variant="outline" className="w-full">
               ปิด

@@ -112,9 +112,12 @@ export default async function ProfilePage() {
                 <span>สถานะ: {latestOrder.status || "กำลังดำเนินการ"}</span>
               </li>
             </ul>
+            <Link href="/history">
+
             <button className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
               ดูคำสั่งซื้อทั้งหมด
             </button>
+            </Link>
           </div>
         </div>
       )}
@@ -134,6 +137,11 @@ export default async function ProfilePage() {
       <div className="px-6 py-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-2">การตั้งค่า</h2>
         <div className="bg-white shadow rounded-lg p-4 space-y-3">
+          <Link href="../">
+          <button className="block w-full text-left text-gray-700 hover:text-green-600">
+            กลับไปหน้าซื้อสินค้า
+          </button>
+          </Link>
           <Link href="/profile/edit">
           <button className="block w-full text-left text-gray-700 hover:text-green-600">
             แก้ไขข้อมูลส่วนตัว
