@@ -9,23 +9,31 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function CheckoutPage() {
   const { items } = useCart();
   const router = useRouter();
-  
+  const placeholderImage = "https://bundui-images.netlify.app/products/04.jpeg";
+  const [editingAddress, setEditingAddress] = useState(false);
+  const [address, setAddress] = useState({
+    name: "ณธรรม ทองเอียง",
+    street: "25/13 ม.9 ต.ท่ายาง",
+    city: "เมือง",
+    state: "ชุมพร",
+    postalCode: "86000",
+    country: "ไทย",
+  });
+
+  const handleAddressChange = (field: string, value: string) => {
+    setAddress((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleCheckout = async () => {
     if (items.length === 0) return toast.error("Cart is empty");
 
-    const address = {
-      street: "25/13 ม.9 ต.ท่ายาง",
-      city: "เมือง",
-      state: "ชุมพร",
-      postalCode: "86000",
-      country: "ไทย"
-    };
-
-    const orderItems = items.map(item => ({
+    const orderItems = items.map((item) => ({
       productId: item.id, // adjust based on how you encode ID in href
       quantity: item.quantity,
       price: item.price,
@@ -40,8 +48,8 @@ export default function CheckoutPage() {
 
       if (!res.ok) throw new Error("Failed to create order");
 
-        const data = await res.json();
-        const orderId = data.orderId;
+      const data = await res.json();
+      const orderId = data.orderId;
 
       toast.success("Order placed successfully!");
       router.push(`/checkout/order-success/${orderId}`); // Redirect after success
@@ -56,19 +64,80 @@ export default function CheckoutPage() {
       <div className="mb-6">
         <h2 className="text-lg font-medium mb-2">ที่อยู่จัดส่ง</h2>
         <Card className="border-green-500">
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-2 text-sm">
-              <MapPin className="w-4 h-4 text-green-600" />
-              <div>
-                <div className="font-semibold">ณธรรม ทองเอียง</div>
-                <div className="text-gray-600">
-                  25/13 ม.9 ต.ท่ายาง อ.เมือง จ.ชุมพร 86000
-                </div>
+          <CardContent className="p-4 space-y-4">
+            <div className="flex items-start gap-2 text-sm">
+              <MapPin className="w-4 h-4 mt-1 text-green-600" />
+              <div className="flex-1 space-y-1">
+                {editingAddress ? (
+                  <>
+                    <Input
+                      value={address.name}
+                      onChange={(e) =>
+                        handleAddressChange("name", e.target.value)
+                      }
+                      placeholder="ชื่อผู้รับ"
+                    />
+                    <Input
+                      value={address.street}
+                      onChange={(e) =>
+                        handleAddressChange("street", e.target.value)
+                      }
+                      placeholder="ที่อยู่"
+                    />
+                    <div className="flex gap-2">
+                      <Input
+                        value={address.city}
+                        onChange={(e) =>
+                          handleAddressChange("city", e.target.value)
+                        }
+                        placeholder="อำเภอ/เขต"
+                      />
+                      <Input
+                        value={address.state}
+                        onChange={(e) =>
+                          handleAddressChange("state", e.target.value)
+                        }
+                        placeholder="จังหวัด"
+                      />
+                    </div>
+                    <Input
+                      value={address.postalCode}
+                      onChange={(e) =>
+                        handleAddressChange("postalCode", e.target.value)
+                      }
+                      placeholder="รหัสไปรษณีย์"
+                    />
+                    <Input
+                      value={address.country}
+                      onChange={(e) =>
+                        handleAddressChange("country", e.target.value)
+                      }
+                      placeholder="ประเทศ"
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div className="font-semibold">{address.name}</div>
+                    <div className="text-gray-600">
+                      {address.street} อ.{address.city} จ.{address.state}{" "}
+                      {address.postalCode}
+                    </div>
+                    <div className="text-gray-600">
+                      ประเทศ {address.country}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
-            <Button variant="outline" className="text-sm px-3 py-1.5">
-              เปลี่ยนที่อยู่
-            </Button>
+            <div className="flex justify-end">
+              <Button
+                variant={editingAddress ? "default" : "outline"}
+                className="text-sm px-3 py-1.5"
+                onClick={() => setEditingAddress((prev) => !prev)}
+              >
+                {editingAddress ? "บันทึกที่อยู่" : "เปลี่ยนที่อยู่"}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -89,7 +158,7 @@ export default function CheckoutPage() {
             <div key={index} className="flex items-center p-4 gap-4">
               <div className="relative w-16 h-16 rounded-md">
                 <Image
-                  src={item.coverImage || ""}
+                  src={item.coverImage || placeholderImage}
                   alt={item.name}
                   fill
                   className="object-cover rounded-md"
@@ -178,7 +247,10 @@ export default function CheckoutPage() {
       </div>
 
       <div className="text-right">
-        <Button onClick={handleCheckout} className="bg-black text-white px-6 py-2">
+        <Button
+          onClick={handleCheckout}
+          className="bg-black text-white px-6 py-2"
+        >
           ชำระเงิน
         </Button>
       </div>

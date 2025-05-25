@@ -21,7 +21,9 @@ export default function AddToCartButton({ product }: { product: any }) {
   const [loading, setLoading] = useState(false);
   const { addItem } = useCart();
 
-  const increase = () => setQuantity((q) => q + 1);
+  const increase = () => {
+    setQuantity((q) => (q < product.stock ? q + 1 : q));
+  };
   const decrease = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
   const handleAddToCart = async () => {
@@ -34,7 +36,9 @@ export default function AddToCartButton({ product }: { product: any }) {
       store: product.store,
     });
     toast.success("เพิ่มสินค้าลงตะกร้าแล้ว", {
-      description: `${product.name} จำนวน ${quantity} ${unitMap[product.unit] || product.unit}`,
+      description: `${product.name} จำนวน ${quantity} ${
+        unitMap[product.unit] || product.unit
+      }`,
     });
     setLoading(false);
   };
@@ -43,16 +47,32 @@ export default function AddToCartButton({ product }: { product: any }) {
     <>
       <div className="w-full flex items-center">
         <div className="flex items-center justify-center space-x-2 w-44">
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={decrease}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={decrease}
+          >
             <Minus />
           </Button>
           <div className="flex-1 text-center border border-gray-200 shadow-sm p-1 rounded-md">
             <div className="font-light tracking-tighter">{quantity}</div>
           </div>
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={increase}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={increase}
+            disabled={quantity >= product.stock}
+          >
             <Plus />
           </Button>
         </div>
+        {quantity >= product.stock && (
+          <p className="ml-5 text-xs text-red-500 mt-1">
+            ไม่สามารถเพิ่มเกินจำนวนสินค้าที่มีในสต็อก
+          </p>
+        )}
         <p className="font-semibold text-green-500 ml-4">
           (ต่อ {unitMap[product.unit] || "หน่วยไม่ระบุ"})
         </p>
