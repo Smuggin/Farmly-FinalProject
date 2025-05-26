@@ -18,12 +18,12 @@ export default function CheckoutPage() {
   const placeholderImage = "https://bundui-images.netlify.app/products/04.jpeg";
   const [editingAddress, setEditingAddress] = useState(false);
   const [address, setAddress] = useState({
-    name: "ณธรรม ทองเอียง",
-    street: "25/13 ม.9 ต.ท่ายาง",
-    city: "เมือง",
-    state: "ชุมพร",
-    postalCode: "86000",
-    country: "ไทย",
+    name: "",
+    street: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
   });
 
   const handleAddressChange = (field: string, value: string) => {

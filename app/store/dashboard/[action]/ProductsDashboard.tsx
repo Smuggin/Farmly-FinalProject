@@ -7,18 +7,22 @@ import Image from "next/image";
 import { useStore } from "../_components/StoreContext";
 import ProductSection from "@/components/productSection";
 
+import Link from "next/link";
+
 export default function ProductsDashboard() {
   const store = useStore();
   const products = store.products ?? [];
-
+  
   return (
     <div className="flex w-full bg-white">
       <main className="flex-1 px-3 bg-gray-50">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold align-top">สินค้า</h1>
+          <Link href={`/store/${store.id}/addproduct`}>
           <Button className="flex items-center gap-2">
             <PlusIcon className="w-4 h-4" /> เพิ่มสินค้า
           </Button>
+          </Link>
         </div>
         <div className="grid grid-cols-6 gap-4 mb-6">
           <ProductSection
