@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useStore } from "../_components/StoreContext";
+import ProductSection from "@/components/productSection";
 
 export default function ProductsDashboard() {
   const store = useStore();
@@ -19,8 +20,17 @@ export default function ProductsDashboard() {
             <PlusIcon className="w-4 h-4" /> เพิ่มสินค้า
           </Button>
         </div>
-
-        {products.length === 0 ? (
+        <div className="grid grid-cols-6 gap-4 mb-6">
+          <ProductSection
+            products={products.map((p) => ({
+              ...p,
+              coverImage: p.images?.[0]?.url ?? "",
+              store: { name: store.name || "" },
+              category: { name: p.category?.name || "" },
+            }))}
+          />
+        </div>
+        {/* {products.length === 0 ? (
           <div className="text-center text-gray-500">ยังไม่มีสินค้าในร้านนี้</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -39,13 +49,12 @@ export default function ProductsDashboard() {
                 </CardHeader>
                 <CardContent className="px-4 pb-4 space-y-1">
                   <CardTitle className="text-base">{p.name}</CardTitle>
-                  {/* <p className="text-sm text-gray-500">หมวดหมู่: {p.category}</p> */}
                   <p className="text-sm text-green-700 font-medium">฿{p.price}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
-        )}
+        )} */}
       </main>
     </div>
   );
