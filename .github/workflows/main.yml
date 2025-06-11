@@ -1,0 +1,13 @@
+name: Keep Supabase Awake
+
+on:
+  schedule:
+    - cron: '0 9 * * 1,4' 
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl request to Supabase
+        run: curl https://ohtsnsoxzgjbgatxkknb.supabase.co/rest/v1/product
